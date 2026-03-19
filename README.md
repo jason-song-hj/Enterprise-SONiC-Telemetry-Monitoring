@@ -1,11 +1,11 @@
 <h1 align="center">SONiC Observability Lab</h1>
 
 <p align="center">
-  <i>Broadcom SONiC Telemetry & Monitoring Testbed</i>
+  <i>Enterprise SONiC Telemetry & Monitoring Testbed</i>
 </p>
 
 <p align="center">
-  Built by <b>Jason</b>
+  Built by <b>Jason S</b>
 </p>
 
 <p align="center">
