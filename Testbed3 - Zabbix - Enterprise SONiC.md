@@ -25,7 +25,9 @@ Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/
 ---
 
 - Second - Directly use the Promote let LLM to help you Faster Creating a new Dashboard for your Host that you created ...
-You need to Download [JSON file](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/sonic_dashboard_examples.json)
+
+Before you put promote to LLM, You need to Download [JSON file](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/sonic_dashboard_examples.json)
+
 ```bash
 Example Promote - Claude 
 I have a Zabbix Dashboard JSON backup file, and I need you to help me rebuild it on a new Zabbix instance.
@@ -48,9 +50,10 @@ Important requirements:
 JSON file as follows:
 [JSON file]
 ```
-- You Must Download 
+
 ---
-- After this, LLM will give you python script and you can run it on your Zabbix Server...
+
+After this, LLM will give you python script and you can run it on your Zabbix Server...
 
 #### This is what it would be looks like ####
 
