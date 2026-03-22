@@ -1,5 +1,5 @@
 <p align="center">
-  <i>Testbed3: Zabbix Monitoring on Enterprise SONiC (Broadcom Platform)</i>
+  <i>Testbed3: Zabbix 7.4.2 Monitoring on Enterprise SONiC (Broadcom Platform)</i>
 </p>
 
 <p align="center">
