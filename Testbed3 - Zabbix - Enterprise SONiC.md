@@ -5,7 +5,7 @@
 
 
 #### Import Enterprise SONiC 4.5.2 template ####
-- Data Collection - Templates - Import -
+- Data Collection - Templates - Import - https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/Enterprise_SONiC_4.5.2_export_templates.yaml
 
 Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/6_entries/OSFP/BGP etc...  
 
