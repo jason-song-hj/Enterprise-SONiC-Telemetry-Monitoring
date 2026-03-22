@@ -1,4 +1,60 @@
+<p align="center">
+  <i>Testbed3: Zabbix Monitoring on Enterprise SONiC (Broadcom Platform)</i>
+</p>
 
+<p align="center">
+  Built by <b>Jason S</b>
+</p>
+
+<p align="center">
+  <a href="https://youtube.com/your-link">
+    <img src="https://img.shields.io/badge/▶ Watch Demo-YouTube-red?style=for-the-badge&logo=youtube"/>
+  </a>
+  <a href="https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed">
+    <img src="https://img.shields.io/badge/GitHub-Repo-black?style=for-the-badge&logo=github"/>
+  </a>
+</p>
+
+---
+
+<p align="center">
+  <b>Validate Zabbix 7.4.2 monitoring capabilities by importing an Enterprise SONiC (32x100G) template and Dashboards </b>
+</p>
+
+---
+
+## 📌 Background
+
+Many enterprise environments already use **Zabbix** as their primary monitoring platform.
+
+When introducing **Enterprise SONiC**, customers often want to integrate it into their existing Zabbix system to maintain operational consistency, instead of deploying a completely new monitoring stack.
+
+This test demonstrates a practical approach:
+
+👉 Import an Enterprise SONiC template into Zabbix  
+👉 Create hosts on Zabbix 7.4  
+👉 Build custom dashboards for SONiC switches  
+
+---
+
+## 🎯 Objective
+
+- Validate compatibility between Enterprise SONiC and Zabbix 7.4.2  
+- Ensure key system and network metrics can be monitored correctly  
+- Demonstrate a simple and reproducible integration workflow  
+- Maintain consistency with existing Zabbix-based operations  
+
+---
+
+## 🧪 What This Test Covers
+
+- Template import and structure validation  
+- SNMP-based data collection from SONiC switches  
+- Host creation and item mapping in Zabbix  
+- Dashboard visualization (CPU, memory, ports, optics, etc.)  
+- End-to-end monitoring workflow verification  
+
+---
 
 #### Micas W6510-32C Switch m65_1$ config SNMP ####
  By default, No SNMP start. So you need to config it first.
