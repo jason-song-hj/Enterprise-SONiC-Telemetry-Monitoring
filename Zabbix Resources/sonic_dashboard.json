@@ -3,7 +3,7 @@
     "result": [
         {
             "dashboardid": "403",
-            "name": "SONiC Switch - Broadcom SONiC 194",
+            "name": "This is the Zabbix Host name - SONiC Switch - Broadcom SONiC 194",
             "userid": "1",
             "private": "1",
             "display_period": "30",
