@@ -5,7 +5,8 @@
 
 
 #### Import Enterprise SONiC 4.5.2 template ####
-- Data Collection - Templates - Import - https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/Enterprise_SONiC_4.5.2_export_templates.yaml
+- Data Collection - Templates - Import - Please Download this and import.<br>
+[Enterprise_SONiC_4.5.2_export_templates](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/Enterprise_SONiC_4.5.2_export_templates.yaml)
 
 Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/6_entries/OSFP/BGP etc...  
 
@@ -24,6 +25,7 @@ Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/
 ---
 
 - Second - Directly use the Promote let LLM to help you Faster Creating a new Dashboard for your Host that you created ...
+You need to Download [JSON file](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/sonic_dashboard_examples.json)
 ```bash
 Example Promote - Claude 
 I have a Zabbix Dashboard JSON backup file, and I need you to help me rebuild it on a new Zabbix instance.
@@ -44,8 +46,9 @@ Important requirements:
 5 Zabbix URL: <http://100.88.xx.xx:8080>, username <Admin>, password <admin>, host name <Put your Hosts - name here> 
 
 JSON file as follows:
-[Paste JSON content]
+[JSON file]
 ```
+- You Must Download 
 ---
 - After this, LLM will give you python script and you can run it on your Zabbix Server...
 
