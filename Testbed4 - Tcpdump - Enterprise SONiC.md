@@ -44,8 +44,7 @@ This unlocks a fundamentally different workflow:
 
 - Validate tcpdump availability and usability on Enterprise SONiC
 - Demonstrate real-world capture scenarios (control plane, management traffic, overlay)
-- Show how Tailscale + tcpdump enables secure remote packet capture without SPAN
-- Compare workflow efficiency vs traditional mirror-based capture
+- Show how native Linux shell access enables remote packet capture without SPAN or physical access
 
 ## 🧪 What This Test Covers
 
@@ -55,3 +54,5 @@ This unlocks a fundamentally different workflow:
 - Checksum offload behavior (why `incorrect` checksum is normal)
 - Saving and transferring `.pcap` files for Wireshark analysis
 - Resource impact of running tcpdump on-box
+
+## DEMO
