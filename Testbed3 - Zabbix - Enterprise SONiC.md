@@ -1,8 +1,14 @@
 
 
-#### You must config 
+#### Micas W6510-32C Switch m65_1$ config SNMP ####
+ By default, No SNMP start. So you need to config it first.
+```bash
+ xxx$ sonic-cli
+ sonic# configure t
+ sonic(config)# snmp-server community public
+```
 
-#### Import Enterprise SONiC 4.5.2 template ####
+#### Import Enterprise SONiC 4.5.2 template Zabbix Server ####
 - Data Collection - Templates - Import - Please Download this and import.<br>
 [Enterprise_SONiC_4.5.2_export_templates](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/Enterprise_SONiC_4.5.2_export_templates.yaml)
 
@@ -16,7 +22,7 @@ Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/
 
 ---
 
-#### Create Dashboard for SONiC Switches ####
+#### Zabbix Server - Create Dashboard for SONiC Switches ####
 
 - First - Go to Monitoring Hosts to create new Host 
 <img width="1913" height="884" alt="image" src="https://github.com/user-attachments/assets/9794a0e3-2617-4b3f-a66f-8c87c97328d4" />
@@ -53,7 +59,7 @@ JSON file as follows:
 
 After this, LLM will give you python script and you can run it on your Zabbix Server...
 
-#### This is what it would be looks like ####
+#### Zabbix Server - This is what it would be looks like ####
 
 <img width="1893" height="892" alt="image" src="https://github.com/user-attachments/assets/656ceee1-edbd-4837-8a5d-69d9b7d66ac8" />
 <img width="1897" height="893" alt="image" src="https://github.com/user-attachments/assets/3818e526-d9a3-4883-9c50-56be82fbf50c" />
