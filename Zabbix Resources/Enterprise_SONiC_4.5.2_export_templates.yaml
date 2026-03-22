@@ -1,0 +1,2879 @@
+zabbix_export:
+  version: '7.4'
+  template_groups:
+    - uuid: 6bb6c47417cb49efbdce4ce08ed89cab
+      name: 'Network devices'
+  templates:
+    - uuid: af66af78fc5042c5843d2b9214e136f1
+      template: 'SONiC Switch M2-W6510-32C'
+      name: 'Micas SONiC Switch M2-W6510-32C'
+      description: |
+        Custom template for SONiC 4.x 32x100G switch (M2-W6510-32C)
+        Monitors: CPU, Memory, Temperature, Fan, Port Status, Optical DDM, Docker
+        SNMP v2c + Zabbix Agent2 (Docker requires zabbix-agent2 on SONiC)
+      groups:
+        - name: 'Network devices'
+      items:
+        - uuid: 34c4d79d01fb4d7fad33f5fdca82f94c
+          name: 'BGP Local AS'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.15.2.0
+          key: bgp.local.as
+          delay: 1h
+          history: 30d
+        - uuid: bdfb8224646e4435b8aa213eaecd263b
+          name: 'BGP Peer Count'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.15.3]'
+          key: bgp.peer.count
+          delay: 60s
+          history: 30d
+        - uuid: 844c801978f245fa874f91a0fe9095ad
+          name: 'CPU idle %'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.11.11.0
+          key: cpu.idle
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+        - uuid: cef6b042b5424593a90c3a93d070e415
+          name: 'CPU iowait %'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.11.54.0
+          key: cpu.iowait
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+        - uuid: 9b42a79eff1e413a99252ac3866aa162
+          name: 'CPU system %'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.11.10.0
+          key: cpu.system
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+        - uuid: 3ed7667cb93d4581abc03936d41a8e6f
+          name: 'CPU usage %'
+          type: CALCULATED
+          key: cpu.usage
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+          params: '100 - last(//cpu.idle)'
+          triggers:
+            - uuid: 8faba4477ac541c3babab71803199864
+              expression: 'last(/SONiC Switch M2-W6510-32C/cpu.usage)>95'
+              name: 'CPU usage critical (>95%)'
+              priority: HIGH
+            - uuid: caea9d4c9526451e9230d10d5325b677
+              expression: 'last(/SONiC Switch M2-W6510-32C/cpu.usage)>90'
+              name: 'CPU usage high (>90%)'
+              priority: WARNING
+        - uuid: 563b1b3d3830458d9e0ebc616e5367ce
+          name: 'CPU user %'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.11.9.0
+          key: cpu.user
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+        - uuid: 8439f4450e584508894bd2454d83dc50
+          name: 'Port Ethernet0 SFP bias current lane1 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000141
+          key: 'ddm.bias.l1[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: f976dcb7d51148418bd2acb510729e06
+          name: 'Eth8 Bias L1 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000941
+          key: 'ddm.bias.l1[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 2f02b0ee536f47cc8922d27a64ed5316
+          name: 'Eth68 Bias L1 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006941
+          key: 'ddm.bias.l1[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: e618664c63ef44a383b3feb625846f86
+          name: 'Eth104 Bias L1 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010541
+          key: 'ddm.bias.l1[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: f7a94ab12af649ee84b65df556536371
+          name: 'Eth120 Bias L1 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012141
+          key: 'ddm.bias.l1[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 4078b4c166654efdbd8e32a6da8cdcc7
+          name: 'Eth0 Bias L2 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000142
+          key: 'ddm.bias.l2[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: fe3397c4ddd041da8eaa6b409d4498a7
+          name: 'Eth8 Bias L2 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000942
+          key: 'ddm.bias.l2[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 46071b3a0d644f05897f9ccf02751af9
+          name: 'Eth68 Bias L2 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006942
+          key: 'ddm.bias.l2[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 082af0af48bc4d4bb9315be41b735286
+          name: 'Eth104 Bias L2 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010542
+          key: 'ddm.bias.l2[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: ce14dc7674ea4c7ba8cd0a856a0430df
+          name: 'Eth120 Bias L2 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012142
+          key: 'ddm.bias.l2[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 7341195810134c4d88cc3dbfc26aeb4e
+          name: 'Eth0 Bias L3 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000143
+          key: 'ddm.bias.l3[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: d8a1143c77984bca929ddc79f59af13f
+          name: 'Eth8 Bias L3 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000943
+          key: 'ddm.bias.l3[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: bd7fa650b9ba4e3fbf411336be39f294
+          name: 'Eth68 Bias L3 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006943
+          key: 'ddm.bias.l3[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 62050d927903450c97c2716faaa3d2b0
+          name: 'Eth104 Bias L3 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010543
+          key: 'ddm.bias.l3[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 9455b7a3cb9d45ce9f7bdaa1727ce823
+          name: 'Eth120 Bias L3 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012143
+          key: 'ddm.bias.l3[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 34b520a4651c4f7b9f728c088c1e2672
+          name: 'Eth0 Bias L4 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000144
+          key: 'ddm.bias.l4[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: f636ec35b2dd4dcfabca33bccfb52c1e
+          name: 'Eth8 Bias L4 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000944
+          key: 'ddm.bias.l4[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: b7927d77c451415b92b42ac4c79806ac
+          name: 'Eth68 Bias L4 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006944
+          key: 'ddm.bias.l4[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: e55bf72d6c464772bc838d389437fc4a
+          name: 'Eth104 Bias L4 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010544
+          key: 'ddm.bias.l4[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: 2a542893efba46eea0842abc64778f1b
+          name: 'Eth120 Bias L4 (uA)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012144
+          key: 'ddm.bias.l4[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: uA
+        - uuid: db173fcfdcde433c9a13038e8567f346
+          name: 'Port Ethernet0 SFP Rx power lane1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000131
+          key: 'ddm.rxpower.l1[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: a918f34931ff489fbab1ca70796e1e88
+          name: 'Port Ethernet8 SFP Rx power lane1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000931
+          key: 'ddm.rxpower.l1[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 475c757734b14cc08da754629136ed8a
+          name: 'Eth68 Rx Power L1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006931
+          key: 'ddm.rxpower.l1[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 2df19e0875584301833c9d252b10d072
+          name: 'Eth104 Rx Power L1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010531
+          key: 'ddm.rxpower.l1[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 8184e162d21543949f1470c3706ed769
+          name: 'Eth120 Rx Power L1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012131
+          key: 'ddm.rxpower.l1[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 56e4aec08ae54c5a818e7d637afb83ca
+          name: 'Eth0 Rx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000132
+          key: 'ddm.rxpower.l2[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: ba3c023f409c4bb5b51514cad9b7748c
+          name: 'Eth8 Rx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000932
+          key: 'ddm.rxpower.l2[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: cb0035e66467426e8e90545d2b08139e
+          name: 'Eth68 Rx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006932
+          key: 'ddm.rxpower.l2[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 3271ca5605b94e0eb05975ea4f46886e
+          name: 'Eth104 Rx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010532
+          key: 'ddm.rxpower.l2[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: eb62181017b04bdbbb0f126a9aa61957
+          name: 'Eth120 Rx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012132
+          key: 'ddm.rxpower.l2[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 5ca7cdb15ba241b1bec6d721316f889d
+          name: 'Eth0 Rx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000133
+          key: 'ddm.rxpower.l3[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: e5d4a115221f437f9346abd3b4dd4fdb
+          name: 'Eth8 Rx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000933
+          key: 'ddm.rxpower.l3[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: f680a1268c7f47b383cca64be247ddcd
+          name: 'Eth68 Rx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006933
+          key: 'ddm.rxpower.l3[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 552501c611f448cfafa4d753628c6b43
+          name: 'Eth104 Rx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010533
+          key: 'ddm.rxpower.l3[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 8c5aa80bea314efa97feb0e24690921f
+          name: 'Eth120 Rx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012133
+          key: 'ddm.rxpower.l3[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 4c5764097ea9422786f1701b7dcbcbce
+          name: 'Eth0 Rx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000134
+          key: 'ddm.rxpower.l4[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: b2e8e07642df46b29d1d0c0c5b60d753
+          name: 'Eth8 Rx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000934
+          key: 'ddm.rxpower.l4[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 2959c55c8ed24d72b7acefa71890d21a
+          name: 'Eth68 Rx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006934
+          key: 'ddm.rxpower.l4[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 69a8c27a6dea4fd9b625686f5eede64f
+          name: 'Eth104 Rx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010534
+          key: 'ddm.rxpower.l4[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: a0091f5b54d04d7185c5551f8eb8793f
+          name: 'Eth120 Rx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012134
+          key: 'ddm.rxpower.l4[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 83981359239b496b894ed82167b38a59
+          name: 'Port Ethernet0 SFP temperature (C)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000150
+          key: 'ddm.temp[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+        - uuid: fc80fcc7761a467a9ab6d2229792ceb3
+          name: 'Port Ethernet8 SFP temperature (C)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000950
+          key: 'ddm.temp[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+        - uuid: 8a14d997df1e4c4c85712c188605f7d9
+          name: 'Eth68 SFP Temp (C)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006950
+          key: 'ddm.temp[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+        - uuid: 3c047fa5be574ca893e0f35cdd52126a
+          name: 'Eth104 SFP Temp (C)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010550
+          key: 'ddm.temp[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+        - uuid: 7355ac2a7e2e4fb7a1b07feec9a60e51
+          name: 'Eth120 SFP Temp (C)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012150
+          key: 'ddm.temp[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+        - uuid: 9e88a16487834a3d82c2ebb3552343ee
+          name: 'Port Ethernet0 SFP Tx power lane1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000121
+          key: 'ddm.txpower.l1[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 7bc1836cceaa46ad9de7281520253c74
+          name: 'Port Ethernet8 SFP Tx power lane1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000921
+          key: 'ddm.txpower.l1[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: b7453c6ecd8f4217a4f85adc33fc083d
+          name: 'Eth68 Tx Power L1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006921
+          key: 'ddm.txpower.l1[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 393fd9ad418a418e88e90cfa3ef7150e
+          name: 'Eth104 Tx Power L1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010521
+          key: 'ddm.txpower.l1[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: a84fe611b75c4d6380e7feac9e1701c4
+          name: 'Eth120 Tx Power L1'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012121
+          key: 'ddm.txpower.l1[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: cb69c3f2e06a4113a74863428ac1a190
+          name: 'Eth0 Tx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000122
+          key: 'ddm.txpower.l2[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 0c235ff46e044f54bf35e21a8e41a4af
+          name: 'Eth8 Tx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000922
+          key: 'ddm.txpower.l2[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: a56bff790dc64f4abd369d17c26a52f3
+          name: 'Eth68 Tx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006922
+          key: 'ddm.txpower.l2[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 691b9f33435b47578aa333946ea305e5
+          name: 'Eth104 Tx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010522
+          key: 'ddm.txpower.l2[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: dac6008094ec4f9aa888ef020c244983
+          name: 'Eth120 Tx Power L2'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012122
+          key: 'ddm.txpower.l2[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 5b1f00bb825e412a86dea66e748d69d9
+          name: 'Eth0 Tx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000123
+          key: 'ddm.txpower.l3[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: d3e93217d85448f189fc48fadb31770c
+          name: 'Eth8 Tx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000923
+          key: 'ddm.txpower.l3[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: b5eba91ace2942078e5ef9f9125310ec
+          name: 'Eth68 Tx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006923
+          key: 'ddm.txpower.l3[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 241159724e8e430b9e5820c31792b872
+          name: 'Eth104 Tx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010523
+          key: 'ddm.txpower.l3[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 4ed15aba6c2b499b8c232db376406979
+          name: 'Eth120 Tx Power L3'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012123
+          key: 'ddm.txpower.l3[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 52337a1316db497c86fc46d1e88c50a4
+          name: 'Eth0 Tx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000124
+          key: 'ddm.txpower.l4[eth0]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 490060f197f4400197f30da758ce5988
+          name: 'Eth8 Tx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000000924
+          key: 'ddm.txpower.l4[eth8]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: b14752d39777489b94e42210d4f2cc13
+          name: 'Eth68 Tx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000006924
+          key: 'ddm.txpower.l4[eth68]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 05cfb6f5f4c64b31ab699036e6eddd1a
+          name: 'Eth104 Tx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000010524
+          key: 'ddm.txpower.l4[eth104]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 8771744692ba453c86fbf0fa66a323b1
+          name: 'Eth120 Tx Power L4'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.1000012124
+          key: 'ddm.txpower.l4[eth120]'
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 2bc28d79797649bbbf31bc56c99d1830
+          name: 'Disk / Usage %'
+          type: CALCULATED
+          key: disk.root.pct
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+          params: 'last(//disk.root.used) / last(//disk.root.total) * 100'
+        - uuid: 0a630bc822e14543b86f4baa280ed5c7
+          name: 'Disk / Total (KB)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.2.3.1.5.54
+          key: disk.root.total
+          delay: 60s
+          history: 30d
+          units: B
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+        - uuid: 7151e5cf699f42b2b526a7f65b7a8fec
+          name: 'Disk / Used (KB)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.25.2.3.1.6.54
+          key: disk.root.used
+          delay: 60s
+          history: 30d
+          units: B
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+        - uuid: 6246d85e139848e9b8b01337aee59064
+          name: 'Fan 1 speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.499019920
+          key: fan.1.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+          triggers:
+            - uuid: bd99f3f3df09408891d304797183cd7a
+              expression: 'last(/SONiC Switch M2-W6510-32C/fan.1.rpm)<1000 and last(/SONiC Switch M2-W6510-32C/fan.1.rpm)>0'
+              name: 'Fan 1 RPM too low'
+              priority: AVERAGE
+        - uuid: e10aebdd643b4bfcb78507fa729036e8
+          name: 'Fan 1 status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.5.499019920
+          key: fan.1.status
+          delay: 60s
+          history: 30d
+          description: '1=ok 2=unavailable 3=nonoperational'
+          triggers:
+            - uuid: 9d62f578d48a47fab17397ffe5f5fab3
+              expression: 'last(/SONiC Switch M2-W6510-32C/fan.1.status)<>1'
+              name: 'Fan 1 status abnormal'
+              priority: HIGH
+        - uuid: da16cc3acd884958bbab9c497616b65f
+          name: 'Fan 2 speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
+          key: fan.2.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+          triggers:
+            - uuid: 530e82d0999b4894af622c1cfceb719f
+              expression: 'last(/SONiC Switch M2-W6510-32C/fan.2.rpm)<1000 and last(/SONiC Switch M2-W6510-32C/fan.2.rpm)>0'
+              name: 'Fan 2 RPM too low'
+              priority: AVERAGE
+        - uuid: be8cb81a909543da9f8cbd14ca60bcb5
+          name: 'Fan 2 status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
+          key: fan.2.status
+          delay: 60s
+          history: 30d
+          triggers:
+            - uuid: 3eb4d243d1aa4889aae76d7a41a1d4a4
+              expression: 'last(/SONiC Switch M2-W6510-32C/fan.2.status)<>1'
+              name: 'Fan 2 status abnormal'
+              priority: HIGH
+        - uuid: 23153e7a75d748efb2f0bc31d9a6f5f0
+          name: 'Eth0 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.1
+          key: 'if.in.octets[eth0]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 1 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: c13aba292ec44fb4aa8d60336828e883
+          name: 'Eth4 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.5
+          key: 'if.in.octets[eth4]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 2 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: d4fc0b7a403f446c8d79adf6d5571d62
+          name: 'Eth8 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.9
+          key: 'if.in.octets[eth8]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 3 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: d92594e5e4a74d4ca72fd6110cdfd34d
+          name: 'Eth12 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.13
+          key: 'if.in.octets[eth12]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 4 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 6303964891e649dd80cf64dc5c58251a
+          name: 'Eth16 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.17
+          key: 'if.in.octets[eth16]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 5 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 8636c7e6e8614ed384adb172896eea7c
+          name: 'Eth20 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.21
+          key: 'if.in.octets[eth20]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 6 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 941bfb198947449c8615504583f38450
+          name: 'Eth24 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.25
+          key: 'if.in.octets[eth24]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 7 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 5d47c6bee4dc421083ac947a1f7bdb55
+          name: 'Eth28 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.29
+          key: 'if.in.octets[eth28]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 8 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: d3cddda33b9747ad93cbd1b630251563
+          name: 'Eth32 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.33
+          key: 'if.in.octets[eth32]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 9 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 910d4b7904a4427eb4d510804efffc17
+          name: 'Eth36 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.37
+          key: 'if.in.octets[eth36]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 10 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: b017f761f8e3442db4e2319a140495e7
+          name: 'Eth40 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.41
+          key: 'if.in.octets[eth40]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 11 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 84066bbe9bc44a21924f2f609e980fee
+          name: 'Eth44 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.45
+          key: 'if.in.octets[eth44]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 12 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 87af81ba61634889acd60b56e414251d
+          name: 'Eth48 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.49
+          key: 'if.in.octets[eth48]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 13 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 02f423542bff426c81779e0d30fa056a
+          name: 'Eth52 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.53
+          key: 'if.in.octets[eth52]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 14 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 3e199df2ffeb4a868d594219e7b00db6
+          name: 'Eth56 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.57
+          key: 'if.in.octets[eth56]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 15 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 9639a366634c410fbc97196c3661e3f9
+          name: 'Eth60 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.61
+          key: 'if.in.octets[eth60]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 16 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: cd72df687aab4814853019d56aa86ef6
+          name: 'Eth64 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.65
+          key: 'if.in.octets[eth64]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 17 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 02b4156c22e74fb69ed36dd7dd11e7e2
+          name: 'Eth68 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.69
+          key: 'if.in.octets[eth68]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 18 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 0a46b873cca243418e2a8dc10722ac35
+          name: 'Eth72 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.73
+          key: 'if.in.octets[eth72]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 19 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 8a5384b62aab40beb6982d8434d4a504
+          name: 'Eth76 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.77
+          key: 'if.in.octets[eth76]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 20 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 8628689ee3bf439381c1aa49ef0ebbc9
+          name: 'Eth80 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.81
+          key: 'if.in.octets[eth80]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 21 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: b70dfea136da4220ae88c81a4674ad09
+          name: 'Eth84 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.85
+          key: 'if.in.octets[eth84]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 22 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 17d2905754b745678f17672bb498fefc
+          name: 'Eth88 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.89
+          key: 'if.in.octets[eth88]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 23 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 02f20e62fe4c40f0a669d09d2511091b
+          name: 'Eth92 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.93
+          key: 'if.in.octets[eth92]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 24 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 158eaf7fee67423f998c0a93e31b9ef8
+          name: 'Eth96 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.97
+          key: 'if.in.octets[eth96]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 25 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 41440dff39f742e999419602d75551fa
+          name: 'Eth100 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.101
+          key: 'if.in.octets[eth100]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 26 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 81102a59c1d546938278d90a4bb9aaca
+          name: 'Eth104 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.105
+          key: 'if.in.octets[eth104]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 27 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 98a76eb6d3fa4403bf859e9905bc87d7
+          name: 'Eth108 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.109
+          key: 'if.in.octets[eth108]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 28 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: f4bd63b990d44c9e8b83700c005354fe
+          name: 'Eth112 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.113
+          key: 'if.in.octets[eth112]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 29 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 547f603499ad4e1d9ef0079d9c917dd7
+          name: 'Eth116 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.117
+          key: 'if.in.octets[eth116]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 30 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: e49ac4b0954645989983e73a116fdb38
+          name: 'Eth120 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.121
+          key: 'if.in.octets[eth120]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 31 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: dbcfaa4b2ce144e5be00bef06fcd8683
+          name: 'Eth124 In'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.6.125
+          key: 'if.in.octets[eth124]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 32 inbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: f025d43610fa46909b6136b8d1ba9f0b
+          name: Eth0
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.1
+          key: 'if.operstatus[eth0]'
+          delay: 60s
+          history: 30d
+          description: 'Port 1'
+          triggers:
+            - uuid: 2f03b1ba158b49ed853abf1707f3cc26
+              expression: 'last(/SONiC Switch M2-W6510-32C/if.operstatus[eth0])=2 and last(/SONiC Switch M2-W6510-32C/if.operstatus[eth0],#3)=1'
+              name: 'Port Ethernet0 went down'
+              priority: WARNING
+        - uuid: 734c6be84ec242d4b8b68161d5b78483
+          name: Eth4
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.5
+          key: 'if.operstatus[eth4]'
+          delay: 60s
+          history: 30d
+          description: 'Port 2'
+        - uuid: 5e2da950208a45faa07b4d95b11900bd
+          name: Eth8
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.9
+          key: 'if.operstatus[eth8]'
+          delay: 60s
+          history: 30d
+          description: 'Port 3'
+        - uuid: da5176e75f6f499ba5663a45496a6b41
+          name: Eth12
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.13
+          key: 'if.operstatus[eth12]'
+          delay: 60s
+          history: 30d
+          description: 'Port 4'
+        - uuid: aaa7ea060fa3451ea70590d2d577507d
+          name: Eth16
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.17
+          key: 'if.operstatus[eth16]'
+          delay: 60s
+          history: 30d
+          description: 'Port 5'
+        - uuid: 834c45abce33495084574d2a1d3ce9c7
+          name: Eth20
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.21
+          key: 'if.operstatus[eth20]'
+          delay: 60s
+          history: 30d
+          description: 'Port 6'
+        - uuid: 907e18983f1d42f3910f78d95c7b70a0
+          name: Eth24
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.25
+          key: 'if.operstatus[eth24]'
+          delay: 60s
+          history: 30d
+          description: 'Port 7'
+        - uuid: c9ab1514d015429896026eb366b01682
+          name: Eth28
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.29
+          key: 'if.operstatus[eth28]'
+          delay: 60s
+          history: 30d
+          description: 'Port 8'
+        - uuid: d14ee43275e44170bbab008929e7cd5c
+          name: Eth32
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.33
+          key: 'if.operstatus[eth32]'
+          delay: 60s
+          history: 30d
+          description: 'Port 9'
+        - uuid: f6614a8dd6dd4be385069767f8a6f015
+          name: Eth36
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.37
+          key: 'if.operstatus[eth36]'
+          delay: 60s
+          history: 30d
+          description: 'Port 10'
+        - uuid: e0ddfd89058b495b87635904abe2b7ef
+          name: Eth40
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.41
+          key: 'if.operstatus[eth40]'
+          delay: 60s
+          history: 30d
+          description: 'Port 11'
+        - uuid: 4774c24d4c7943938391942d250c91f6
+          name: Eth44
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.45
+          key: 'if.operstatus[eth44]'
+          delay: 60s
+          history: 30d
+          description: 'Port 12'
+        - uuid: 7a1638aa24d24de0bfa918453490575b
+          name: Eth48
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.49
+          key: 'if.operstatus[eth48]'
+          delay: 60s
+          history: 30d
+          description: 'Port 13'
+        - uuid: 28bbb75e508a4cb195a6a9b3a96ce08b
+          name: Eth52
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.53
+          key: 'if.operstatus[eth52]'
+          delay: 60s
+          history: 30d
+          description: 'Port 14'
+        - uuid: e8545299e9c24446abda38f69a4c4add
+          name: Eth56
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.57
+          key: 'if.operstatus[eth56]'
+          delay: 60s
+          history: 30d
+          description: 'Port 15'
+        - uuid: d350a41af6d044c7af18fc7be0f58d3a
+          name: Eth60
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.61
+          key: 'if.operstatus[eth60]'
+          delay: 60s
+          history: 30d
+          description: 'Port 16'
+        - uuid: 2927e2c42cfa49018ba089bc5a281746
+          name: Eth64
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.65
+          key: 'if.operstatus[eth64]'
+          delay: 60s
+          history: 30d
+          description: 'Port 17'
+        - uuid: 347d9172e017401eaa5f855cb3d9dd06
+          name: Eth68
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.69
+          key: 'if.operstatus[eth68]'
+          delay: 60s
+          history: 30d
+          description: 'Port 18'
+        - uuid: 7981a9a72db44ee29baa425b049b785e
+          name: Eth72
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.73
+          key: 'if.operstatus[eth72]'
+          delay: 60s
+          history: 30d
+          description: 'Port 19'
+        - uuid: 4172c6527a8c457f8021d8da344d0cec
+          name: Eth76
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.77
+          key: 'if.operstatus[eth76]'
+          delay: 60s
+          history: 30d
+          description: 'Port 20'
+        - uuid: f55789ba7b284dc88e50644c3c089ab2
+          name: Eth80
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.81
+          key: 'if.operstatus[eth80]'
+          delay: 60s
+          history: 30d
+          description: 'Port 21'
+        - uuid: a074c93e82894c17b9a7c33d393a428c
+          name: Eth84
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.85
+          key: 'if.operstatus[eth84]'
+          delay: 60s
+          history: 30d
+          description: 'Port 22'
+        - uuid: ecc64010d6494baa9cdbca93b2492592
+          name: Eth88
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.89
+          key: 'if.operstatus[eth88]'
+          delay: 60s
+          history: 30d
+          description: 'Port 23'
+        - uuid: e5904806bf5541eca2d9e7ecf26291c1
+          name: Eth92
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.93
+          key: 'if.operstatus[eth92]'
+          delay: 60s
+          history: 30d
+          description: 'Port 24'
+        - uuid: 146dc9fd5cdb47cebfafa0f94e78083f
+          name: Eth96
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.97
+          key: 'if.operstatus[eth96]'
+          delay: 60s
+          history: 30d
+          description: 'Port 25'
+        - uuid: d525c1ab1d444558a321f3160876d792
+          name: Eth100
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.101
+          key: 'if.operstatus[eth100]'
+          delay: 60s
+          history: 30d
+          description: 'Port 26'
+        - uuid: 37e3d091badc46b1b5473f7c1481fefc
+          name: Eth104
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.105
+          key: 'if.operstatus[eth104]'
+          delay: 60s
+          history: 30d
+          description: 'Port 27'
+        - uuid: 34e569d0a6144a48baacf01fb8e644c0
+          name: Eth108
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.109
+          key: 'if.operstatus[eth108]'
+          delay: 60s
+          history: 30d
+          description: 'Port 28'
+        - uuid: ff7a49adb5174182a6c3e7b6c6097feb
+          name: Eth112
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.113
+          key: 'if.operstatus[eth112]'
+          delay: 60s
+          history: 30d
+          description: 'Port 29'
+        - uuid: e07c5479d9b345a1aed0d626110ac457
+          name: Eth116
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.117
+          key: 'if.operstatus[eth116]'
+          delay: 60s
+          history: 30d
+          description: 'Port 30'
+        - uuid: 661cff6e53cb46ad8fc409a9274e3f49
+          name: Eth120
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.121
+          key: 'if.operstatus[eth120]'
+          delay: 60s
+          history: 30d
+          description: 'Port 31'
+        - uuid: 442e2ab32d4e46e5a81f700d94e63ec9
+          name: Eth124
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.2.2.1.8.125
+          key: 'if.operstatus[eth124]'
+          delay: 60s
+          history: 30d
+          description: 'Port 32'
+        - uuid: 94df5e3d5b264fcb92a9afe637607b65
+          name: 'Eth0 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.1
+          key: 'if.out.octets[eth0]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 1 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: b5eee5c5ebbe4cc491858daa711bf2a1
+          name: 'Eth4 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.5
+          key: 'if.out.octets[eth4]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 2 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 530c827a83e24b49941c2d5498ed8512
+          name: 'Eth8 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.9
+          key: 'if.out.octets[eth8]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 3 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 4bae567efbaa405aa91fd2bdcfd966a3
+          name: 'Eth12 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.13
+          key: 'if.out.octets[eth12]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 4 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: a498ff820880457697def9af7c0fa99b
+          name: 'Eth16 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.17
+          key: 'if.out.octets[eth16]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 5 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 660dae208c1a433a880204aa9ac3b479
+          name: 'Eth20 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.21
+          key: 'if.out.octets[eth20]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 6 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: fe2e67fba7544ec89419efb6e0829e3e
+          name: 'Eth24 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.25
+          key: 'if.out.octets[eth24]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 7 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: ba87a8741804499ebf71661866831d37
+          name: 'Eth28 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.29
+          key: 'if.out.octets[eth28]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 8 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 114144ce94fe4fbeaf6131a559a987d5
+          name: 'Eth32 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.33
+          key: 'if.out.octets[eth32]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 9 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 602e750faeff4fedacda8f7708b2e1c5
+          name: 'Eth36 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.37
+          key: 'if.out.octets[eth36]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 10 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: c03a8869cb494fbca75e8b178f12df01
+          name: 'Eth40 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.41
+          key: 'if.out.octets[eth40]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 11 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 0ef16b5d4eb349f8ada054926325c2bd
+          name: 'Eth44 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.45
+          key: 'if.out.octets[eth44]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 12 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 689232f2f7484571b7d49d70de352e84
+          name: 'Eth48 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.49
+          key: 'if.out.octets[eth48]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 13 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 3fbfcd0d33a14a2c82dae40c315ad232
+          name: 'Eth52 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.53
+          key: 'if.out.octets[eth52]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 14 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: c5d4348527594fc5851fdeaaaedb00c2
+          name: 'Eth56 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.57
+          key: 'if.out.octets[eth56]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 15 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 9f73962c5ced4174977fdb67165fa663
+          name: 'Eth60 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.61
+          key: 'if.out.octets[eth60]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 16 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 9c7700832c934b78ab50f42814e74643
+          name: 'Eth64 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.65
+          key: 'if.out.octets[eth64]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 17 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: f3c5ca5aacfc43c198f3d76661ba2f71
+          name: 'Eth68 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.69
+          key: 'if.out.octets[eth68]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 18 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 32711c281ebc4d1dbbea6210118d2331
+          name: 'Eth72 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.73
+          key: 'if.out.octets[eth72]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 19 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: e29492925ac448a4b8e7d8d93676d357
+          name: 'Eth76 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.77
+          key: 'if.out.octets[eth76]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 20 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 1bfb2b0925de4bdd95922826e92a6d4d
+          name: 'Eth80 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.81
+          key: 'if.out.octets[eth80]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 21 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 27c3e2158ad54a7087582781bb492d83
+          name: 'Eth84 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.85
+          key: 'if.out.octets[eth84]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 22 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 9ce519225cb14bc888628a66f3f172f9
+          name: 'Eth88 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.89
+          key: 'if.out.octets[eth88]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 23 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 6daed024f1e14793b84cbc69782ae80b
+          name: 'Eth92 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.93
+          key: 'if.out.octets[eth92]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 24 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: a001e28e91ce4ae38c8295b2ee589c0c
+          name: 'Eth96 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.97
+          key: 'if.out.octets[eth96]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 25 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 82e098318e244a3eaeecf816d9c9b7f0
+          name: 'Eth100 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.101
+          key: 'if.out.octets[eth100]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 26 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 4059db49e0904a1198e70ff470841095
+          name: 'Eth104 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.105
+          key: 'if.out.octets[eth104]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 27 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: cfb14377ecbc425291055e0d6a1ad58d
+          name: 'Eth108 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.109
+          key: 'if.out.octets[eth108]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 28 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: ad11607f834b40c9a41301af59d595d1
+          name: 'Eth112 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.113
+          key: 'if.out.octets[eth112]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 29 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: f9a06347694c46fd8f7b3dfb18c2b2ea
+          name: 'Eth116 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.117
+          key: 'if.out.octets[eth116]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 30 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 847f99ba13f5480498418f38971bad84
+          name: 'Eth120 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.121
+          key: 'if.out.octets[eth120]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 31 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 736e282dd4804efd8c7e1686ea50740b
+          name: 'Eth124 Out'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.31.1.1.1.10.125
+          key: 'if.out.octets[eth124]'
+          delay: 60s
+          history: 30d
+          units: bps
+          description: 'Port 32 outbound traffic'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 2cde6f5ccf0941f7a551681c94eb23a2
+          name: 'lmFan FAN 1 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.1
+          key: lm.fan.1.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 16346c451a4c46ed88178010e701b9a9
+          name: 'lmFan FAN 2 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.2
+          key: lm.fan.2.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: c1428db770d9435ebcb1f64b10f487f7
+          name: 'lmFan FAN 3 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.3
+          key: lm.fan.3.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: f4dcec55ba7945d0ac0041a4d3a4f5a4
+          name: 'lmFan FAN 4 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.4
+          key: lm.fan.4.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: f9fa710c81314de481834a295b0e979f
+          name: 'lmFan FAN 5 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.5
+          key: lm.fan.5.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: a15188f6c3164b82a66c2515fbf673d7
+          name: 'lmFan FAN 6 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.6
+          key: lm.fan.6.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 2ec7b229a6fd4b5ba3ab608a584cab0e
+          name: 'lmFan FAN 7 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.7
+          key: lm.fan.7.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 6a5be4b3d3124431913428cf1a2e9cd9
+          name: 'lmFan FAN 8 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.8
+          key: lm.fan.8.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 3098e6e3e5fe44f982483057229ac262
+          name: 'lmFan FAN 9 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.9
+          key: lm.fan.9.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 54d5ba4bee24423e980fda917ce0b063
+          name: 'lmFan FAN 10 Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.10
+          key: lm.fan.10.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: cfb9fb2f71d94df1bd3579900a9c4f75
+          name: 'lmFan PSU 1 FAN Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.11
+          key: lm.fan.11.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 7594801e62d74537a51687778bb702d4
+          name: 'lmFan PSU 2 FAN Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.3.1.3.12
+          key: lm.fan.12.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: 168654eea139499788ac327fbb94dda4
+          name: 'lmTemp BASE LM75 (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.1
+          key: lm.temp.1.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: ee74508cff8643929dcd590aeb651c2d
+          name: 'lmTemp CPU (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.2
+          key: lm.temp.2.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+        - uuid: e3e0055f138d480fb3781333a80bd447
+          name: 'lmTemp MAC LM75 1 (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.3
+          key: lm.temp.3.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: 5c11a759ca084c4aa1488d6d5c36603f
+          name: 'lmTemp MAC LM75 2 (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.4
+          key: lm.temp.4.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: 2de721a2727d4ec192d8849809636f1b
+          name: 'lmTemp MAC LM75 3 (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.5
+          key: lm.temp.5.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: b108b95feaf2432ea839dcb11e9fc3c6
+          name: 'lmTemp MAC LM75 4 (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.6
+          key: lm.temp.6.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: 5df862520cbb4c609a0157a709e8b216
+          name: 'lmTemp MAC TEMP (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.7
+          key: lm.temp.7.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: 353a0be6c0ff48cbadf116073cefa3d5
+          name: 'lmTemp PSU 1 Temp (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.8
+          key: lm.temp.8.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: 2760891a91b14bf38c6c497e5d1b0906
+          name: 'lmTemp PSU 2 Temp (mC)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.2.1.3.9
+          key: lm.temp.9.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '!mC'
+        - uuid: 6a58841dacde44d6aefb8471e37f00f8
+          name: 'lmVolt PSU 1 (mV)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.4.1.3.1
+          key: lm.volt.1.mv
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: mV
+        - uuid: 3e54262a7f054dd08b769e078625a2cb
+          name: 'lmVolt PSU 2 (mV)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.13.16.4.1.3.2
+          key: lm.volt.2.mv
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: mV
+        - uuid: cb0cd5d932d94119b19e710f012ab81a
+          name: 'Memory available'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.4.6.0
+          key: mem.avail
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: KB
+        - uuid: 64cadf4d70bf42bc82747c39d983152f
+          name: 'Memory buffer'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.4.15.0
+          key: mem.buffer
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: KB
+        - uuid: ead3d380276746048d73eb40e14a2799
+          name: 'Memory cached'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.4.14.0
+          key: mem.cached
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: KB
+        - uuid: 0c79df332cad46399a543ac54bac1570
+          name: 'Memory total'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.2021.4.5.0
+          key: mem.total
+          delay: 5m
+          history: 30d
+          value_type: FLOAT
+          units: KB
+        - uuid: 4a1d911020db48dfab993b4508b68ad0
+          name: 'Memory usage %'
+          type: CALCULATED
+          key: mem.usage.pct
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: '%'
+          params: '(last(//mem.total) - last(//mem.avail)) / last(//mem.total) * 100'
+          triggers:
+            - uuid: de9f8e94b15a411ea2b5feab166cda56
+              expression: 'last(/SONiC Switch M2-W6510-32C/mem.usage.pct)>95'
+              name: 'Memory usage critical (>95%)'
+              priority: HIGH
+            - uuid: 0884d77bcb3342ddac2d62438752a320
+              expression: 'last(/SONiC Switch M2-W6510-32C/mem.usage.pct)>85'
+              name: 'Memory usage high (>85%)'
+              priority: WARNING
+        - uuid: c433491abdeb40889dcd32778f842c28
+          name: 'OSPF Admin Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.14.1.2.0
+          key: ospf.admin.status
+          delay: 60s
+          history: 30d
+        - uuid: f1cc7235265e4ceda29c5034a3f2a563
+          name: 'OSPF Router ID'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.14.1.1.0
+          key: ospf.router.id
+          delay: 5m
+          history: 30d
+          value_type: CHAR
+        - uuid: 9449e2a9f7c145e891a35f431568271d
+          name: 'PSU 1 Fan Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.601019920
+          key: psu.1.fan.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: cbac450e942e4148b60690e3325b8cf3
+          name: 'PSU 1 Fan Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.5.601019920
+          key: psu.1.fan.status
+          delay: 60s
+          history: 30d
+        - uuid: 31e5fa57b5984670a488ee6dfe7f21c0
+          name: 'PSU 1 Power Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.1
+          key: psu.1.power.status
+          delay: 60s
+          history: 30d
+          valuemap:
+            name: 'PSU Power Status'
+        - uuid: cdf37b43ded142d7a3a6020ed166aae9
+          name: 'PSU 1 Temp Raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.601240010
+          key: psu.1.temp.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 039bd002ae894bff997c48ec17303c53
+          name: 'PSU 1 Voltage'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.601240050
+          key: psu.1.voltage
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: cc29e5c8458a4c55a9a67993808b2e07
+          name: 'PSU 2 Fan Speed (RPM)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
+          key: psu.2.fan.rpm
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: RPM
+        - uuid: d2bbed1a794c4009b7b7087456594b0f
+          name: 'PSU 2 Fan Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
+          key: psu.2.fan.status
+          delay: 60s
+          history: 30d
+        - uuid: 85353464486048b9b32fb09ef6122b67
+          name: 'PSU 2 Power Status'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.2
+          key: psu.2.power.status
+          delay: 60s
+          history: 30d
+          valuemap:
+            name: 'PSU Power Status'
+        - uuid: 27f8102d35be4b4e90c6d900365257c9
+          name: 'PSU 2 Temp Raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.602240010
+          key: psu.2.temp.raw
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: d890e8579511458b95d701a0784615e7
+          name: 'PSU 2 Voltage'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.602240050
+          key: psu.2.voltage
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+        - uuid: 4d8e77aa07e6442aabe4467dddb44531
+          name: 'System description'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.1.0
+          key: system.descr
+          delay: 1h
+          history: 7d
+          value_type: CHAR
+        - uuid: b36ccf9538164f6f9eb87a561bc92541
+          name: 'Docker ps output'
+          type: ZABBIX_ACTIVE
+          key: 'system.run[docker ps --format table 2>/dev/null]'
+          delay: 60s
+          history: 7d
+          value_type: TEXT
+        - uuid: d39c9925b0b2488eb0d46597df6477c4
+          name: 'Docker containers total'
+          type: ZABBIX_ACTIVE
+          key: 'system.run[docker ps -aq | wc -l]'
+          delay: 60s
+          history: 30d
+        - uuid: a9a851c6cf944a97bf89c7aedeb3a270
+          name: 'Docker containers running'
+          type: ZABBIX_ACTIVE
+          key: 'system.run[docker ps -q | wc -l]'
+          delay: 60s
+          history: 30d
+          triggers:
+            - uuid: 30a96fd179744160a41a524a12abf225
+              expression: 'last(/SONiC Switch M2-W6510-32C/system.run[docker ps -q | wc -l])<last(/SONiC Switch M2-W6510-32C/system.run[docker ps -q | wc -l],#2)'
+              name: 'Docker container count decreased'
+              priority: WARNING
+        - uuid: 8ab445394eb5476f978a3561367fd216
+          name: 'System uptime'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.1.3.0
+          key: system.uptime
+          delay: 5m
+          history: 30d
+          value_type: FLOAT
+          units: uptime
+        - uuid: 5b4057a4200b4559a2ae4a085d0c78fc
+          name: 'ARP Table Entries'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.4.22]'
+          key: table.arp.count
+          delay: 5m
+          history: 30d
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.length()
+        - uuid: f54952edaca7420aa92e0858c29294f0
+          name: 'IPv4 Route Entries'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.4.24.2]'
+          key: table.ipv4.routes
+          delay: 5m
+          history: 30d
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.length()
+        - uuid: c92d86cb0a76439d92eb0248b86d101f
+          name: 'IPv6 Address Entries'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.4.34]'
+          key: table.ipv6.addresses
+          delay: 5m
+          history: 30d
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.length()
+        - uuid: 39773c348bae40f8885a95e3e7f01853
+          name: 'MAC Table Entries'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.17.7.1.2.2]'
+          key: table.mac.count
+          delay: 5m
+          history: 30d
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.length()
+        - uuid: a0d6ee03fa434fd88bc12cef29a6f09c
+          name: 'VLAN Count'
+          type: SNMP_AGENT
+          snmp_oid: 'walk[1.3.6.1.2.1.17.7.1.4.2]'
+          key: table.vlan.count
+          delay: 5m
+          history: 30d
+          preprocessing:
+            - type: PROMETHEUS_TO_JSON
+              parameters:
+                - ''
+            - type: JSONPATH
+              parameters:
+                - $.length()
+        - uuid: 8209f5b96175401ab3d148c8162edc23
+          name: 'Temp BASE LM75 (C)'
+          type: CALCULATED
+          key: temp.sensor1
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor1.raw) / 1000'
+          triggers:
+            - uuid: 81b6c7a435304911bb79fa595e322fe2
+              expression: 'last(/SONiC Switch M2-W6510-32C/temp.sensor1)>85'
+              name: 'Temperature sensor 1 critical (>85C)'
+              priority: HIGH
+            - uuid: b3608ebfd6b2494a908c888820d4584b
+              expression: 'last(/SONiC Switch M2-W6510-32C/temp.sensor1)>75'
+              name: 'Temperature sensor 1 high (>75C)'
+              priority: WARNING
+        - uuid: 7be97549c03245cfb88766ba9f953dca
+          name: 'Temperature sensor 1 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990110
+          key: temp.sensor1.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+        - uuid: b7e1ab547e4742f2956702891c8279bd
+          name: 'Temp MAC LM75 1 (C)'
+          type: CALCULATED
+          key: temp.sensor2
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor2.raw) / 1000'
+        - uuid: ac650e28a6af49cab8a6f9e24ab92779
+          name: 'Temperature sensor 2 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990210
+          key: temp.sensor2.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+        - uuid: ea05587f100348608b600e950784c68d
+          name: 'Temp MAC LM75 2 (C)'
+          type: CALCULATED
+          key: temp.sensor3
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor3.raw) / 1000'
+        - uuid: 7f80288ff4554a6e9a6a1caa9391a3a3
+          name: 'Temperature sensor 3 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990310
+          key: temp.sensor3.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+        - uuid: 842292daa52d4febaa2329ab5a459e98
+          name: 'Temp MAC LM75 3 (C)'
+          type: CALCULATED
+          key: temp.sensor4
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor4.raw) / 1000'
+        - uuid: 71f04ba8e3b24b61a3c809b7abf6c977
+          name: 'Temperature sensor 4 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990410
+          key: temp.sensor4.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+        - uuid: de2c0fd3982f49ec8914835263767591
+          name: 'Temp MAC LM75 4 (C)'
+          type: CALCULATED
+          key: temp.sensor5
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor5.raw) / 1000'
+        - uuid: b7d86a2cd9054a2a83a50af70706b9f8
+          name: 'Temperature sensor 5 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990510
+          key: temp.sensor5.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+        - uuid: 397d29ff02374a67a0521a52c38ddc2b
+          name: 'Temp MAC ASIC (C)'
+          type: CALCULATED
+          key: temp.sensor6
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor6.raw) / 1000'
+        - uuid: 58848c9a19e74a0aa06d37e60f1651c5
+          name: 'Temperature sensor 6 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990610
+          key: temp.sensor6.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+        - uuid: 8904af87605a410080a7cf3546e813c9
+          name: 'Temp CPU (C)'
+          type: CALCULATED
+          key: temp.sensor7
+          delay: 60s
+          history: 30d
+          value_type: FLOAT
+          units: C
+          params: 'last(//temp.sensor7.raw) / 1000'
+        - uuid: c1d6fc30f8324394b1c14c2b0afa4b73
+          name: 'Temperature sensor 7 raw'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.2.1.99.1.1.1.4.200990710
+          key: temp.sensor7.raw
+          delay: 60s
+          history: 7d
+          value_type: FLOAT
+      valuemaps:
+        - uuid: 8fd89daa5db64e06b9fe1bf952e1ae47
+          name: 'PSU Power Status'
+          mappings:
+            - value: '1'
+              newvalue: 'OFF'
+            - value: '2'
+              newvalue: 'ON'
+            - value: '3'
+              newvalue: 'OFF'
+            - value: '4'
+              newvalue: 'OFF'
+            - value: '5'
+              newvalue: 'OFF'
+            - value: '6'
+              newvalue: 'OFF'
+            - value: '7'
+              newvalue: 'OFF'
+            - value: '8'
+              newvalue: failed
+            - value: '9'
+              newvalue: onButFanFail
+  graphs:
+    - uuid: 201ffdae16764f32807ae2c6f5596832
+      name: 'All Ports Traffic'
+      height: '300'
+      graph_items:
+        - color: 1A237E
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth0]'
+        - sortorder: '1'
+          color: B71C1C
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth0]'
+        - sortorder: '2'
+          color: '283593'
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth4]'
+        - sortorder: '3'
+          color: C62828
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth4]'
+        - sortorder: '4'
+          color: 303F9F
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth8]'
+        - sortorder: '5'
+          color: D32F2F
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth8]'
+        - sortorder: '6'
+          color: 3949AB
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth12]'
+        - sortorder: '7'
+          color: E53935
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth12]'
+        - sortorder: '8'
+          color: 3F51B5
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth16]'
+        - sortorder: '9'
+          color: F44336
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth16]'
+        - sortorder: '10'
+          color: 5C6BC0
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth20]'
+        - sortorder: '11'
+          color: EF5350
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth20]'
+        - sortorder: '12'
+          color: 7986CB
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth24]'
+        - sortorder: '13'
+          color: E57373
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth24]'
+        - sortorder: '14'
+          color: 9FA8DA
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth28]'
+        - sortorder: '15'
+          color: EF9A9A
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth28]'
+        - sortorder: '16'
+          color: C5CAE9
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth32]'
+        - sortorder: '17'
+          color: FFCDD2
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth32]'
+        - sortorder: '18'
+          color: E8EAF6
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth36]'
+        - sortorder: '19'
+          color: FFEBEE
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth36]'
+        - sortorder: '20'
+          color: 0D47A1
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth40]'
+        - sortorder: '21'
+          color: 880E4F
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth40]'
+        - sortorder: '22'
+          color: 1565C0
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth44]'
+        - sortorder: '23'
+          color: AD1457
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth44]'
+        - sortorder: '24'
+          color: 1976D2
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth48]'
+        - sortorder: '25'
+          color: C2185B
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth48]'
+        - sortorder: '26'
+          color: 1E88E5
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth52]'
+        - sortorder: '27'
+          color: D81B60
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth52]'
+        - sortorder: '28'
+          color: 2196F3
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth56]'
+        - sortorder: '29'
+          color: E91E63
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth56]'
+        - sortorder: '30'
+          color: 42A5F5
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth60]'
+        - sortorder: '31'
+          color: EC407A
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth60]'
+        - sortorder: '32'
+          color: 64B5F6
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth64]'
+        - sortorder: '33'
+          color: F48FB1
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth64]'
+        - sortorder: '34'
+          color: 90CAF9
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth68]'
+        - sortorder: '35'
+          color: F8BBD0
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth68]'
+        - sortorder: '36'
+          color: BBDEFB
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth72]'
+        - sortorder: '37'
+          color: FCE4EC
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth72]'
+        - sortorder: '38'
+          color: E3F2FD
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth76]'
+        - sortorder: '39'
+          color: FF80AB
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth76]'
+        - sortorder: '40'
+          color: '006064'
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth80]'
+        - sortorder: '41'
+          color: E65100
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth80]'
+        - sortorder: '42'
+          color: 00838F
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth84]'
+        - sortorder: '43'
+          color: EF6C00
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth84]'
+        - sortorder: '44'
+          color: 0097A7
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth88]'
+        - sortorder: '45'
+          color: F57C00
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth88]'
+        - sortorder: '46'
+          color: 00ACC1
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth92]'
+        - sortorder: '47'
+          color: FB8C00
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth92]'
+        - sortorder: '48'
+          color: 00BCD4
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth96]'
+        - sortorder: '49'
+          color: FF9800
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth96]'
+        - sortorder: '50'
+          color: 26C6DA
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth100]'
+        - sortorder: '51'
+          color: FFA726
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth100]'
+        - sortorder: '52'
+          color: 4DD0E1
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth104]'
+        - sortorder: '53'
+          color: FFB74D
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth104]'
+        - sortorder: '54'
+          color: 80DEEA
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth108]'
+        - sortorder: '55'
+          color: FFCC80
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth108]'
+        - sortorder: '56'
+          color: B2EBF2
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth112]'
+        - sortorder: '57'
+          color: FFE0B2
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth112]'
+        - sortorder: '58'
+          color: E0F7FA
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth116]'
+        - sortorder: '59'
+          color: FFF3E0
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth116]'
+        - sortorder: '60'
+          color: 004D40
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth120]'
+        - sortorder: '61'
+          color: 33691E
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth120]'
+        - sortorder: '62'
+          color: 00695C
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.in.octets[eth124]'
+        - sortorder: '63'
+          color: 558B2F
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'if.out.octets[eth124]'
+    - uuid: d88755a8b2d440848dd3ab173caf044f
+      name: 'CPU Usage'
+      graph_items:
+        - color: FF0000
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: cpu.usage
+        - color: 0000FF
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: cpu.user
+        - color: 00AA00
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: cpu.system
+    - uuid: ef46ddbac7f84f2cb93f838ce875adb9
+      name: 'Docker Container Count'
+      graph_items:
+        - color: 0000FF
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: 'system.run[docker ps -q | wc -l]'
+    - uuid: 20ae09737ea5448b917847cfd5830c80
+      name: 'Memory Usage %'
+      graph_items:
+        - color: FF0000
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: mem.usage.pct
+    - uuid: 535bafdf18dc4c788d2fc2f46ecc96f9
+      name: 'Temperature Sensors'
+      graph_items:
+        - color: FF0000
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor1
+        - color: FF6600
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor2
+        - color: FFAA00
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor3
+        - color: 0000FF
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor4
+        - color: 00AA00
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor5
+        - color: AA00AA
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor6
+        - color: 00AAAA
+          item:
+            host: 'SONiC Switch M2-W6510-32C'
+            key: temp.sensor7
