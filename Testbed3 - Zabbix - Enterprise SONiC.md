@@ -1,8 +1,6 @@
-[Enterprise_SONiC_4.5.2_export_templates.yaml](https://github.com/user-attachments/files/26165923/Enterprise_SONiC_4.5.2_export_templates.yaml)
-
-#### Make sure you had already config SNMPv2/v3 on Enterprise SONiC with Micas M2-W6510-32C ####
 
 
+#### You must config 
 
 #### Import Enterprise SONiC 4.5.2 template ####
 - Data Collection - Templates - Import - Please Download this and import.<br>
