@@ -1,0 +1,1324 @@
+{
+    "jsonrpc": "2.0",
+    "result": [
+        {
+            "dashboardid": "403",
+            "name": "SONiC Switch - Broadcom SONiC 194",
+            "userid": "1",
+            "private": "1",
+            "display_period": "30",
+            "auto_start": "1",
+            "uuid": "",
+            "pages": [
+                {
+                    "dashboard_pageid": "20037",
+                    "name": "Overview",
+                    "display_period": "0",
+                    "widgets": [
+                        {
+                            "widgetid": "76313",
+                            "type": "problems",
+                            "name": "Alerts",
+                            "x": "0",
+                            "y": "0",
+                            "width": "72",
+                            "height": "4",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "3",
+                                    "name": "hostids.0",
+                                    "value": "10776"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show_lines",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76314",
+                            "type": "graph",
+                            "name": "CPU Utilization",
+                            "x": "0",
+                            "y": "4",
+                            "width": "33",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5242"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76315",
+                            "type": "graph",
+                            "name": "Memory Usage",
+                            "x": "33",
+                            "y": "4",
+                            "width": "39",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5243"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76316",
+                            "type": "graph",
+                            "name": "ASIC / CPU Temperature",
+                            "x": "0",
+                            "y": "13",
+                            "width": "33",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5244"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76317",
+                            "type": "graph",
+                            "name": "5 Fan Cages / 10 Fan Modules Speed",
+                            "x": "33",
+                            "y": "13",
+                            "width": "39",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5483"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76363",
+                            "type": "honeycomb",
+                            "name": "Port Status",
+                            "x": "0",
+                            "y": "10",
+                            "width": "72",
+                            "height": "3",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "3",
+                                    "name": "hostids.0",
+                                    "value": "10776"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "primary_label",
+                                    "value": "{ITEM.NAME}"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "secondary_label_type",
+                                    "value": "0"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "secondary_label",
+                                    "value": "{ITEM.DESCRIPTION}"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "bg_color",
+                                    "value": "FF5252"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.0.color",
+                                    "value": "2E7D32"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.0.threshold",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.1.color",
+                                    "value": "FF5252"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.1.threshold",
+                                    "value": "2"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "reference",
+                                    "value": "TMNGE"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.1",
+                                    "value": "Eth4"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.2",
+                                    "value": "Eth8"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.3",
+                                    "value": "Eth12"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.4",
+                                    "value": "Eth16"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.5",
+                                    "value": "Eth20"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.6",
+                                    "value": "Eth24"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.7",
+                                    "value": "Eth28"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.8",
+                                    "value": "Eth32"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.9",
+                                    "value": "Eth36"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.10",
+                                    "value": "Eth40"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.11",
+                                    "value": "Eth44"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.12",
+                                    "value": "Eth48"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.13",
+                                    "value": "Eth52"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.14",
+                                    "value": "Eth56"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.15",
+                                    "value": "Eth60"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.16",
+                                    "value": "Eth64"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.17",
+                                    "value": "Eth68"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.18",
+                                    "value": "Eth72"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.19",
+                                    "value": "Eth76"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.20",
+                                    "value": "Eth80"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.21",
+                                    "value": "Eth84"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.22",
+                                    "value": "Eth88"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.23",
+                                    "value": "Eth92"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.24",
+                                    "value": "Eth96"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.25",
+                                    "value": "Eth100"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.26",
+                                    "value": "Eth104"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.27",
+                                    "value": "Eth108"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.28",
+                                    "value": "Eth112"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.29",
+                                    "value": "Eth116"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.30",
+                                    "value": "Eth120"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.31",
+                                    "value": "Eth124"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "items.0",
+                                    "value": "Eth0"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76459",
+                            "type": "graph",
+                            "name": "PSU Fan Speed",
+                            "x": "0",
+                            "y": "23",
+                            "width": "36",
+                            "height": "5",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5478"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76461",
+                            "type": "graph",
+                            "name": "PSU Voltage (mV)",
+                            "x": "36",
+                            "y": "19",
+                            "width": "36",
+                            "height": "9",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5480"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76462",
+                            "type": "item",
+                            "name": "PSU 1 Power Status",
+                            "x": "0",
+                            "y": "19",
+                            "width": "36",
+                            "height": "2",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69884"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "2"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.0.color",
+                                    "value": "E65660"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.0.threshold",
+                                    "value": "7"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76463",
+                            "type": "item",
+                            "name": "PSU 2 Power Status",
+                            "x": "0",
+                            "y": "21",
+                            "width": "36",
+                            "height": "2",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69886"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "2"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.0.color",
+                                    "value": "E65660"
+                                },
+                                {
+                                    "type": "1",
+                                    "name": "thresholds.0.threshold",
+                                    "value": "7"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "dashboard_pageid": "20039",
+                    "name": "Port Traffic (1-16)",
+                    "display_period": "0",
+                    "widgets": [
+                        {
+                            "widgetid": "76365",
+                            "type": "graph",
+                            "name": "Eth0 Traffic",
+                            "x": "0",
+                            "y": "0",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5441"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76366",
+                            "type": "graph",
+                            "name": "Eth4 Traffic",
+                            "x": "36",
+                            "y": "0",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5442"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76367",
+                            "type": "graph",
+                            "name": "Eth8 Traffic",
+                            "x": "0",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5443"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76368",
+                            "type": "graph",
+                            "name": "Eth12 Traffic",
+                            "x": "36",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5444"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76369",
+                            "type": "graph",
+                            "name": "Eth16 Traffic",
+                            "x": "0",
+                            "y": "12",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5445"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76370",
+                            "type": "graph",
+                            "name": "Eth20 Traffic",
+                            "x": "36",
+                            "y": "12",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5446"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76371",
+                            "type": "graph",
+                            "name": "Eth24 Traffic",
+                            "x": "0",
+                            "y": "18",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5447"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76372",
+                            "type": "graph",
+                            "name": "Eth28 Traffic",
+                            "x": "36",
+                            "y": "18",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5448"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76373",
+                            "type": "graph",
+                            "name": "Eth32 Traffic",
+                            "x": "0",
+                            "y": "24",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5449"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76374",
+                            "type": "graph",
+                            "name": "Eth36 Traffic",
+                            "x": "36",
+                            "y": "24",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5450"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76375",
+                            "type": "graph",
+                            "name": "Eth40 Traffic",
+                            "x": "0",
+                            "y": "30",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5451"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76376",
+                            "type": "graph",
+                            "name": "Eth44 Traffic",
+                            "x": "36",
+                            "y": "30",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5452"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76377",
+                            "type": "graph",
+                            "name": "Eth48 Traffic",
+                            "x": "0",
+                            "y": "36",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5453"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76378",
+                            "type": "graph",
+                            "name": "Eth52 Traffic",
+                            "x": "36",
+                            "y": "36",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5454"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76379",
+                            "type": "graph",
+                            "name": "Eth56 Traffic",
+                            "x": "0",
+                            "y": "42",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5455"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76380",
+                            "type": "graph",
+                            "name": "Eth60 Traffic",
+                            "x": "36",
+                            "y": "42",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5456"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "dashboard_pageid": "20040",
+                    "name": "Port Traffic (17-32)",
+                    "display_period": "0",
+                    "widgets": [
+                        {
+                            "widgetid": "76381",
+                            "type": "graph",
+                            "name": "Eth64 Traffic",
+                            "x": "0",
+                            "y": "0",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5457"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76382",
+                            "type": "graph",
+                            "name": "Eth68 Traffic",
+                            "x": "36",
+                            "y": "0",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5458"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76383",
+                            "type": "graph",
+                            "name": "Eth72 Traffic",
+                            "x": "0",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5459"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76384",
+                            "type": "graph",
+                            "name": "Eth76 Traffic",
+                            "x": "36",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5460"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76385",
+                            "type": "graph",
+                            "name": "Eth80 Traffic",
+                            "x": "0",
+                            "y": "12",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5461"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76386",
+                            "type": "graph",
+                            "name": "Eth84 Traffic",
+                            "x": "36",
+                            "y": "12",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5462"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76387",
+                            "type": "graph",
+                            "name": "Eth88 Traffic",
+                            "x": "0",
+                            "y": "18",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5463"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76388",
+                            "type": "graph",
+                            "name": "Eth92 Traffic",
+                            "x": "36",
+                            "y": "18",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5464"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76389",
+                            "type": "graph",
+                            "name": "Eth96 Traffic",
+                            "x": "0",
+                            "y": "24",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5465"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76390",
+                            "type": "graph",
+                            "name": "Eth100 Traffic",
+                            "x": "36",
+                            "y": "24",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5466"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76391",
+                            "type": "graph",
+                            "name": "Eth104 Traffic",
+                            "x": "0",
+                            "y": "30",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5467"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76392",
+                            "type": "graph",
+                            "name": "Eth108 Traffic",
+                            "x": "36",
+                            "y": "30",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5468"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76393",
+                            "type": "graph",
+                            "name": "Eth112 Traffic",
+                            "x": "0",
+                            "y": "36",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5469"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76394",
+                            "type": "graph",
+                            "name": "Eth116 Traffic",
+                            "x": "36",
+                            "y": "36",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5470"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76395",
+                            "type": "graph",
+                            "name": "Eth120 Traffic",
+                            "x": "0",
+                            "y": "42",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5471"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76396",
+                            "type": "graph",
+                            "name": "Eth124 Traffic",
+                            "x": "36",
+                            "y": "42",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5472"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "dashboard_pageid": "20042",
+                    "name": "DDM - Optical Modules",
+                    "display_period": "0",
+                    "widgets": [
+                        {
+                            "widgetid": "76454",
+                            "type": "graph",
+                            "name": "DDM Temperature (All Ports)",
+                            "x": "0",
+                            "y": "0",
+                            "width": "36",
+                            "height": "10",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5473"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76455",
+                            "type": "graph",
+                            "name": "DDM Tx Power (All Ports)",
+                            "x": "36",
+                            "y": "10",
+                            "width": "36",
+                            "height": "10",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5474"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76456",
+                            "type": "graph",
+                            "name": "DDM Rx Power (All Ports)",
+                            "x": "0",
+                            "y": "10",
+                            "width": "36",
+                            "height": "10",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5475"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76457",
+                            "type": "graph",
+                            "name": "DDM Bias Current (All Ports)",
+                            "x": "36",
+                            "y": "0",
+                            "width": "36",
+                            "height": "10",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "6",
+                                    "name": "graphid.0",
+                                    "value": "5476"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "dashboard_pageid": "20043",
+                    "name": "Tables",
+                    "display_period": "0",
+                    "widgets": [
+                        {
+                            "widgetid": "76476",
+                            "type": "item",
+                            "name": "VLANs",
+                            "x": "0",
+                            "y": "0",
+                            "width": "24",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69898"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76477",
+                            "type": "item",
+                            "name": "IPv4 Routes",
+                            "x": "24",
+                            "y": "0",
+                            "width": "24",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69896"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76478",
+                            "type": "item",
+                            "name": "IPv6 Addresses",
+                            "x": "48",
+                            "y": "0",
+                            "width": "24",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69906"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76479",
+                            "type": "item",
+                            "name": "ARP Entries",
+                            "x": "0",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69892"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76480",
+                            "type": "item",
+                            "name": "MAC Entries",
+                            "x": "36",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69894"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "dashboard_pageid": "20044",
+                    "name": "L3 Protocols",
+                    "display_period": "0",
+                    "widgets": [
+                        {
+                            "widgetid": "76481",
+                            "type": "item",
+                            "name": "BGP Local AS",
+                            "x": "0",
+                            "y": "0",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69888"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76482",
+                            "type": "item",
+                            "name": "BGP Peer Count",
+                            "x": "36",
+                            "y": "0",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69890"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76483",
+                            "type": "item",
+                            "name": "OSPF Admin Status",
+                            "x": "0",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69908"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        },
+                        {
+                            "widgetid": "76484",
+                            "type": "item",
+                            "name": "OSPF Router ID",
+                            "x": "36",
+                            "y": "6",
+                            "width": "36",
+                            "height": "6",
+                            "view_mode": "0",
+                            "fields": [
+                                {
+                                    "type": "4",
+                                    "name": "itemid.0",
+                                    "value": "69910"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.0",
+                                    "value": "1"
+                                },
+                                {
+                                    "type": "0",
+                                    "name": "show.1",
+                                    "value": "2"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "id": 1
+}
