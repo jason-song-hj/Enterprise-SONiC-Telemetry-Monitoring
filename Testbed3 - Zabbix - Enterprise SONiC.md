@@ -66,8 +66,7 @@ This test demonstrates a practical approach:
 ```
 
 #### Import Enterprise SONiC 4.5.2 template Zabbix Server ####
-- Data Collection - Templates - Import - Please Download this and import.<br>
-[Enterprise_SONiC_4.5.2_export_templates](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/Enterprise_SONiC_4.5.2_export_templates.yaml)
+Data Collection - Templates - Import - Please Download this and import - [Enterprise_SONiC_4.5.2_export_templates](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/Enterprise_SONiC_4.5.2_export_templates.yaml)
 
 Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/6_entries/OSFP/BGP etc...  
 
@@ -81,11 +80,13 @@ Enterprise SONiC 239 items which were like CPU/Mem/Fan/PSU/Ports/DDM/ARP/MAC/v4/
 
 #### Zabbix Server - Create Dashboard for SONiC Switches ####
 
-- First - Go to Monitoring Hosts to create new Host 
+First - Go to Monitoring Hosts to create new Host 
+
 <img width="1913" height="884" alt="image" src="https://github.com/user-attachments/assets/9794a0e3-2617-4b3f-a66f-8c87c97328d4" />
+
 ---
 
-- Second - Directly use the Promote let LLM to help you Faster Creating a new Dashboard for your Host that you created ...
+Second - Directly use the Promote let LLM to help you Faster Creating a new Dashboard for your Host that you created ...
 
 Before you put promote to LLM, You need to Download [JSON file](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring-Testbed/blob/main/Zabbix%20Resources/sonic_dashboard_examples.json)
 
