@@ -95,6 +95,7 @@ tail -f ~/datahub/snmptraps/snmptraps.log
 docker snmp restart
 
 you will see a new item appears at Zabbix Server
+<br>
 <img width="598" height="65" alt="image" src="https://github.com/user-attachments/assets/16a297eb-7a52-4991-aa83-f562d402ee93" />
 
 #### Go to your Zabbix Server Dashboard ####
