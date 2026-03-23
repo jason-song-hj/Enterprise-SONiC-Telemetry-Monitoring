@@ -6,7 +6,7 @@ show snmp-server host
 
 
 #### Docker-Compose file ####
-‘’‘bash
+```bash
 version: "3.8"
 
 services:
@@ -78,8 +78,8 @@ networks:
     ipam:
       config:
         - subnet: 10.30.0.0/16
-        
-
+```
+You can change the way that your docker-compose yml file as you like     
 
 #### Make new folder ####
 cd your_target_foder
