@@ -108,4 +108,8 @@ Dashboard - add wid - item history - you can add the items trap that you want.
 
 ---
 
+Finnally My Dashboard
+<img width="1883" height="664" alt="image" src="https://github.com/user-attachments/assets/40542070-c96f-4e5c-b9d2-0e82273c3ee6" />
+
+
 
