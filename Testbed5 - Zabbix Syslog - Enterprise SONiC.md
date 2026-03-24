@@ -1,4 +1,18 @@
-# 📡 SONiC Syslog → Zabbix Integration
+<p align="center">
+  <i>Enterprise SONiC Syslog → Zabbix Integration</i>
+</p>
+
+<p align="center">
+  Built by <b>Jason S</b>
+</p>
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=yZ-0n-A-ZsM">
+    <img src="https://img.shields.io/badge/▶ Watch Demo-YouTube-red?style=for-the-badge&logo=youtube"/>
+  </a>
+</p>
+
+---
 
 <p align="center">
   <b>Collect SONiC syslog and display in Zabbix Dashboard</b>
