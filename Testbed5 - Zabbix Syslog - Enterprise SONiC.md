@@ -11,9 +11,9 @@
 ```
 SONiC Switch
   └── rsyslog (message-type log, UDP 514)
-        └──► host machine :514
+        └──► Zabbix host machine :514
                 └── rsyslog → ./sonic-syslog/sonic-syslog.log
-                        └──► zabbix-agent2 (active mode)
+                        └──► Zabbix Host Docker - zabbix-agent2 (active mode)
                                 └──► zabbix-server → Dashboard
 ```
 
