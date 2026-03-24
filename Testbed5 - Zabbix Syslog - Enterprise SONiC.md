@@ -19,7 +19,7 @@ SONiC Switch
 
 ---
 
-## 1️⃣ SONiC Device Configuration
+## 1️⃣ SONiC Switch - Enterprise SONiC Configuration
 
 ```bash
 sonic# configure
@@ -34,7 +34,7 @@ sonic# show logging servers
 
 ---
 
-## 2️⃣ Host Machine Configuration
+## 2️⃣ Zabbix Server Syslog Configuration
 
 ### 2.1 rsyslog — Receive Syslog
 
@@ -117,25 +117,6 @@ docker ps | grep zabbix-agent2
 | Type of information | `Log` |
 | Update interval | `30s` |
 
-### 3.3 Create Triggers (Severity-based Alerting)
-
-`Data collection → Hosts → <hostname> → Triggers → Create trigger`
-
-**Critical:**
-```
-find(/<hostname>/log[/var/log/sonic-syslog/sonic-syslog.log,,,,skip],,"iregexp","CRIT|ALERT|EMERG")=1
-```
-
-**Error:**
-```
-find(/<hostname>/log[/var/log/sonic-syslog/sonic-syslog.log,,,,skip],,"iregexp","\\bERR\\b|ERROR")=1
-```
-
-**Warning:**
-```
-find(/<hostname>/log[/var/log/sonic-syslog/sonic-syslog.log,,,,skip],,"iregexp","WARNING")=1
-```
-
 ---
 
 ## 4️⃣ Dashboard Setup
@@ -149,6 +130,10 @@ Add a **History** widget:
 | Type | `History` |
 | Items | Select `SONiC Syslog` |
 | Show lines | `50–100` |
+
+---
+
+<img width="1894" height="890" alt="image" src="https://github.com/user-attachments/assets/683c54fe-d761-4c2d-b7a8-f1af9ae52ed1" />
 
 ---
 
