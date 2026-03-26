@@ -1,0 +1,75 @@
+groups:
+  - name: sonic_table_counts
+    interval: 60s
+    rules:
+      - record: sonic_arp_count
+        expr: count(ipNetToPhysicalType{instance="<SWITCH_IP>"})
+      # sonic_mac_count: uncomment when MAC table data is available
+      # sonic_vlan_count: uncomment when VLAN data is available
+      # sonic_ipv4_route_count: uncomment when route table data is available
+
+  - name: sonic_alerts
+    rules:
+      - alert: InterfaceDown
+        expr: ifOperStatus{instance="<SWITCH_IP>", ifName!="eth0"} == 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Interface {{ $labels.ifName }} is down"
+
+      - alert: CPUHigh
+        expr: (100 - ucdCpuIdle{instance="<SWITCH_IP>"}) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 90%: {{ $value }}%"
+
+      - alert: MemoryHigh
+        expr: (1 - ucdMemAvailReal{instance="<SWITCH_IP>"} / ucdMemTotalReal{instance="<SWITCH_IP>"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 85%: {{ $value }}%"
+
+      - alert: PSUDown
+        expr: psu1PowerStatus{instance="<SWITCH_IP>"} != 1 or psu2PowerStatus{instance="<SWITCH_IP>"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PSU power status abnormal"
+
+      - alert: BGPPeerDown
+        expr: bgpPeerState{instance="<SWITCH_IP>"} != 6
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "BGP peer {{ $labels.bgpPeerRemoteAddr }} not in established state"
+
+      - alert: TempHigh
+        expr: lmTempSensorsValue{instance="<SWITCH_IP>"} / 1000 > 75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Temperature sensor {{ $labels.lmTempSensorsIndex }} above 75C: {{ $value }}C"
+
+      - alert: FanDown
+        expr: fan1Status{instance="<SWITCH_IP>"} != 1 or fan2Status{instance="<SWITCH_IP>"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fan status abnormal"
+
+      - alert: SnmpScrapeDown
+        expr: up{job=~"sonic_.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SNMP scrape failed for job {{ $labels.job }} instance {{ $labels.instance }}"
