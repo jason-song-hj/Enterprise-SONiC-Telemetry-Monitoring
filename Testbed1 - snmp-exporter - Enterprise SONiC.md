@@ -18,7 +18,7 @@
 ---
 
 <p align="center">
-  <b>Lightweight monitoring SNMP-Exporter_verification for small-scale SONiC deployments</b>
+  <b>Collect SONiC switch metrics via SNMP Exporter and visualize in Grafana</b>
 </p>
 
 ## 📌 Background
@@ -51,18 +51,54 @@ This test explores a practical approach:
 - Interface-level metrics (if_mib)
 - Performance and resource impact
 
+## 🏗️ Architecture
+
+```
+SONiC Switch
+  └── snmpd (UDP 161)
+        └──► snmp-exporter (Docker on-box, port 9116)
+                └──► Prometheus (scrape via HTTP)
+                        └──► Grafana Dashboard
+```
+
+---
+
 ## DEMO & Results
-#### On Micas W6510-32C Switch + m65_1$ new folder for SNMP-Exporter ####
+
+
+ #### On  test SNMP-exporter ####
+
+
+
+
+---
+
+
+
+## 1️⃣ Micas W6510-32C Switch m65_1$ SONiC Switch — Enable SNMP
+
 ```bash
-mkdir /opt/snmp-exporter
+sonic-cli
+sonic# configure t
+sonic(config)# snmp-server community public
+sonic(config)# exit
 ```
+
+---
+
+## 2️⃣ SONiC Switch — Deploy snmp-exporter (Docker on Micas W6510-32C Switch m65_1$)
+
+### 2.1 Create config directory and snmp.yml - Run SNMP-Exporter on Switch
+
 ```bash
-sudo su
-cd /opt/snmp-exporter
-vi snmp.yml
+m65_1$ mkdir /opt/snmp-exporter
+m65_1$ cd /opt/snmp-exporter
+m65_1$ vi snmp.yml
 ```
-- Insert this case for simple test
-```bash
+
+Paste the following config:
+
+```yaml
 auths:
   public_v2:
     version: 2
@@ -70,13 +106,11 @@ auths:
 
 modules:
 
-  # ============================================================
-  # Module 1: 接口流量 & 状态（已有基础上完善）
-  # ============================================================
+  # Module 1: Interface traffic & status
   sonic_if:
     walk:
-      - 1.3.6.1.2.1.2.2      # ifTable (ifOperStatus 等)
-      - 1.3.6.1.2.1.31.1.1   # ifXTable (ifName, ifHCInOctets 等)
+      - 1.3.6.1.2.1.2.2      # ifTable
+      - 1.3.6.1.2.1.31.1.1   # ifXTable
     metrics:
       - name: ifName
         oid: 1.3.6.1.2.1.31.1.1.1.1
@@ -203,17 +237,14 @@ modules:
             oid: 1.3.6.1.2.1.31.1.1.1.1
             type: DisplayString
 
-  # ============================================================
-  # Module 2: CPU & 内存（UCD-SNMP MIB）
-  # ============================================================
+  # Module 2: CPU & Memory (UCD-SNMP MIB)
   sonic_system:
     walk:
-      - 1.3.6.1.4.1.2021.11   # CPU (UCD-SNMP)
-      - 1.3.6.1.4.1.2021.4    # Memory (UCD-SNMP)
+      - 1.3.6.1.4.1.2021.11   # CPU
+      - 1.3.6.1.4.1.2021.4    # Memory
       - 1.3.6.1.2.1.25.2.3    # hrStorageTable
       - 1.3.6.1.2.1.1         # sysDescr, sysUpTime
     metrics:
-      # --- CPU ---
       - name: ucdCpuIdle
         oid: 1.3.6.1.4.1.2021.11.11.0
         type: gauge
@@ -234,7 +265,6 @@ modules:
         type: gauge
         help: CPU iowait percentage
 
-      # --- Memory (UCD) ---
       - name: ucdMemTotalReal
         oid: 1.3.6.1.4.1.2021.4.5.0
         type: gauge
@@ -260,7 +290,6 @@ modules:
         type: gauge
         help: Memory used for cache (kB)
 
-      # --- hrStorage (内存占用 index=54) ---
       - name: hrStorageSize
         oid: 1.3.6.1.2.1.25.2.3.1.5
         type: gauge
@@ -277,23 +306,19 @@ modules:
           - labelname: hrStorageIndex
             type: gauge
 
-      # --- System ---
       - name: sysUpTimeInstance
         oid: 1.3.6.1.2.1.1.3.0
         type: gauge
         help: System uptime in hundredths of a second
 
-  # ============================================================
-  # Module 3: 温度传感器（UCD lmSensors + Entity Sensor MIB）
-  # ============================================================
+  # Module 3: Temperature & Fan sensors (UCD lmSensors + Entity Sensor MIB)
   sonic_sensors:
     walk:
       - 1.3.6.1.4.1.2021.13.16.2  # lmTempSensorsTable
       - 1.3.6.1.4.1.2021.13.16.3  # lmFanSensorsTable
       - 1.3.6.1.4.1.2021.13.16.4  # lmVoltSensorsTable
-      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue (温度/PSU/DDM)
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue
     metrics:
-      # UCD lmSensors 温度
       - name: lmTempSensorsValue
         oid: 1.3.6.1.4.1.2021.13.16.2.1.3
         type: gauge
@@ -302,7 +327,6 @@ modules:
           - labelname: lmTempSensorsIndex
             type: gauge
 
-      # UCD lmSensors 风扇
       - name: lmFanSensorsValue
         oid: 1.3.6.1.4.1.2021.13.16.3.1.3
         type: gauge
@@ -311,7 +335,6 @@ modules:
           - labelname: lmFanSensorsIndex
             type: gauge
 
-      # UCD lmSensors 电压
       - name: lmVoltSensorsValue
         oid: 1.3.6.1.4.1.2021.13.16.4.1.3
         type: gauge
@@ -320,7 +343,6 @@ modules:
           - labelname: lmVoltSensorsIndex
             type: gauge
 
-      # Entity Sensor - 温度传感器 (index 200990110~200990710)
       - name: entPhySensorValue
         oid: 1.3.6.1.2.1.99.1.1.1.4
         type: gauge
@@ -329,7 +351,6 @@ modules:
           - labelname: entPhySensorIndex
             type: gauge
 
-      # Entity Sensor - 状态
       - name: entPhySensorOperStatus
         oid: 1.3.6.1.2.1.99.1.1.1.5
         type: gauge
@@ -338,110 +359,92 @@ modules:
           - labelname: entPhySensorIndex
             type: gauge
 
-# ============================================================
-  # Module 5: PSU / FAN / 硬件状态（Entity Sensor MIB）
-  # ============================================================
+  # Module 4: PSU / FAN hardware status (Entity Sensor MIB + Cisco MIB)
   sonic_hardware:
     walk:
-      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue / Status (所有硬件传感器)
-      - 1.3.6.1.4.1.9.9.117.1.1.2 # Cisco PSU power status MIB
+      - 1.3.6.1.2.1.99.1.1.1
+      - 1.3.6.1.4.1.9.9.117.1.1.2
     metrics:
-      # FAN 1 转速
       - name: fan1Rpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.499019920
         type: gauge
         help: Fan 1 speed (RPM)
 
-      # FAN 1 状态
       - name: fan1Status
         oid: 1.3.6.1.2.1.99.1.1.1.5.499019920
         type: gauge
         help: "Fan 1 status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # FAN 2 转速
       - name: fan2Rpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
         type: gauge
         help: Fan 2 speed (RPM)
 
-      # FAN 2 状态
       - name: fan2Status
         oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
         type: gauge
         help: "Fan 2 status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # PSU 1 风扇转速
       - name: psu1FanRpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.601019920
         type: gauge
         help: PSU 1 fan speed (RPM)
 
-      # PSU 1 风扇状态
       - name: psu1FanStatus
         oid: 1.3.6.1.2.1.99.1.1.1.5.601019920
         type: gauge
         help: "PSU 1 fan status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # PSU 1 电源状态 (Cisco MIB)
       - name: psu1PowerStatus
         oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.1
         type: gauge
         help: "PSU 1 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
 
-      # PSU 1 温度
       - name: psu1Temp
         oid: 1.3.6.1.2.1.99.1.1.1.4.601240010
         type: gauge
         help: PSU 1 temperature (raw, divide by 1000 for C)
 
-      # PSU 1 电压
       - name: psu1Voltage
         oid: 1.3.6.1.2.1.99.1.1.1.4.601240050
         type: gauge
         help: PSU 1 voltage (raw, divide by 1000 for V)
 
-      # PSU 2 风扇转速
       - name: psu2FanRpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
         type: gauge
         help: PSU 2 fan speed (RPM)
 
-      # PSU 2 风扇状态
       - name: psu2FanStatus
         oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
         type: gauge
         help: "PSU 2 fan status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # PSU 2 电源状态
       - name: psu2PowerStatus
         oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.2
         type: gauge
         help: "PSU 2 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
 
-      # PSU 2 温度
       - name: psu2Temp
         oid: 1.3.6.1.2.1.99.1.1.1.4.602240010
         type: gauge
         help: PSU 2 temperature (raw, divide by 1000 for C)
 
-      # PSU 2 电压
       - name: psu2Voltage
         oid: 1.3.6.1.2.1.99.1.1.1.4.602240050
         type: gauge
         help: PSU 2 voltage (raw, divide by 1000 for V)
 
-  # ============================================================
-  # Module 6: DDM 光模块（Entity Sensor MIB，walk 整棵树）
-  # ============================================================
+  # Module 5: DDM optical transceivers (Entity Sensor MIB)
   sonic_ddm:
     walk:
-      - 1.3.6.1.2.1.99.1.1.1.4    # entPhySensorValue (含所有DDM实例)
-      - 1.3.6.1.2.1.99.1.1.1.5    # entPhySensorOperStatus
+      - 1.3.6.1.2.1.99.1.1.1.4
+      - 1.3.6.1.2.1.99.1.1.1.5
     metrics:
       - name: ddmSensorValue
         oid: 1.3.6.1.2.1.99.1.1.1.4
         type: gauge
-        help: DDM sensor raw value (TxPower/RxPower/Bias/Temp，需按index换算单位)
+        help: DDM sensor raw value (TxPower/RxPower/Bias/Temp)
         indexes:
           - labelname: ddmSensorIndex
             type: gauge
@@ -454,24 +457,20 @@ modules:
           - labelname: ddmSensorIndex
             type: gauge
 
-  # ============================================================
-  # Module 7: 表项计数（ARP / MAC / VLAN / 路由）
-  # ============================================================
+  # Module 6: ARP / Neighbor table
   sonic_tables:
     walk:
-      - 1.3.6.1.2.1.4.22.1.2
-      - 1.3.6.1.2.1.4.24.2
-      - 1.3.6.1.2.1.4.34
-      - 1.3.6.1.2.1.17.7.1.2.2
-      - 1.3.6.1.2.1.17.7.1.1.4
-      - 1.3.6.1.4.1.4413.1.2.2.1.1.1.1
+      - 1.3.6.1.2.1.4.35.1.4    # ipNetToPhysicalPhysAddress (ARP/Neighbor)
+      - 1.3.6.1.2.1.4.35.1.6    # ipNetToPhysicalState
+      - 1.3.6.1.2.1.17.7.1.1.4  # dot1qNumVlans (scalar)
 
+  # Module 7: Routing protocols (BGP / OSPF)
   sonic_routing:
     walk:
-      - 1.3.6.1.2.1.15.2.0    # bgpLocalAs
-      - 1.3.6.1.2.1.15.3      # bgpPeerTable
-      - 1.3.6.1.2.1.14.1.1.0  # ospfRouterId
-      - 1.3.6.1.2.1.14.1.2.0  # ospfAdminStat
+      - 1.3.6.1.2.1.15.2.0
+      - 1.3.6.1.2.1.15.3
+      - 1.3.6.1.2.1.14.1.1.0
+      - 1.3.6.1.2.1.14.1.2.0
     metrics:
       - name: bgpLocalAs
         oid: 1.3.6.1.2.1.15.2.0
@@ -521,29 +520,26 @@ modules:
         help: OSPF router ID
 ```
 
-#### On Micas W6510-32C Switch m65_1$ ####
+### 2.2 Run Micas W6510-32C Switch m65_1$ snmp-exporter container
+
 ```bash
 docker run -d \
- --name snmp-exporter \
- -p 9116:9116 \
- -v /opt/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml \
- prom/snmp-exporter
+  --name snmp-exporter \
+  --restart always \
+  -p 9116:9116 \
+  -v /opt/snmp-exporter/snmp.yml:/etc/snmp_exporter/snmp.yml \
+  prom/snmp-exporter
 ```
 
- #### On Micas W6510-32C Switch m65_1$ config SNMP ####
- By default, No SNMP start. So you need to config it first.
+### 2.3 Verify
+
 ```bash
- xxx$ sonic-cli
- sonic# configure t
- sonic(config)# snmp-server community public
+curl "http://<SWITCH_IP>:9116/snmp?target=<SWITCH_IP>&module=sonic_if&auth=public_v2"
 ```
 
- #### On Micas W6510-32C Switch m65_1$ test SNMP-exporter ####
-```bash
- curl "http://192.168.1.124:9116/snmp?target=192.168.1.124&module=sonic_if"
+Expected output (first few lines):
+
 ```
- admin@sonic:~$ curl "http://192.168.1.124:9116/snmp?target=192.168.1.124&module=sonic_if"
-```bash
 # HELP ifAdminStatus The desired state of the interface - 1.3.6.1.2.1.2.2.1.7
 # TYPE ifAdminStatus gauge
 ifAdminStatus{ifAlias="",ifDescr="Ethernet0",ifIndex="1",ifName="Ethernet0"} 2
@@ -563,8 +559,6 @@ ifAdminStatus{ifAlias="",ifDescr="Ethernet32",ifIndex="3
 ...
 ```
 
-#### Remote PC test Resources of Switches test ####
-
 You can see the docker status snmp-exporter system performance and resources
 <img width="898" height="45" alt="image" src="https://github.com/user-attachments/assets/0ffe4ebe-b3e3-484b-9fa9-cc271ff9572f" />
 
@@ -574,9 +568,15 @@ when you run snmp walk  snmpwalk -v2c -c public 192.168.xxx.x
 </br>
 Performance CPU 0.00%, MEM 0.6% so it was not very occupied and just little resources needed of MEM.
 
+---
 
-#### LoginServer - Config Prometheus ####
-```bash
+## 3️⃣ Prometheus Server — Configuration
+
+### 3.1 prometheus.yml - Prometheus Server
+
+Location: `/etc/prometheus/prometheus.yml` (or your mounted path)
+
+```yaml
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
@@ -588,7 +588,7 @@ scrape_configs:
   - job_name: sonic_interfaces
     static_configs:
       - targets:
-          - 100.105.8.4   # 交换机 IP
+          - <SWITCH_IP>
     metrics_path: /snmp
     params:
       module: [sonic_if]
@@ -599,11 +599,11 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 100.105.8.4:9116
+        replacement: <SWITCH_IP>:9116
 
   - job_name: sonic_system
     static_configs:
-      - targets: [100.105.8.4]
+      - targets: [<SWITCH_IP>]
     metrics_path: /snmp
     params:
       module: [sonic_system]
@@ -614,11 +614,11 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 100.105.8.4:9116
+        replacement: <SWITCH_IP>:9116
 
   - job_name: sonic_sensors
     static_configs:
-      - targets: [100.105.8.4]
+      - targets: [<SWITCH_IP>]
     metrics_path: /snmp
     params:
       module: [sonic_sensors]
@@ -629,26 +629,11 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 100.105.8.4:9116
-
-  - job_name: sonic_routing
-    static_configs:
-      - targets: [100.105.8.4]
-    metrics_path: /snmp
-    params:
-      module: [sonic_routing]
-      auth: [public_v2]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: 100.105.8.4:9116
+        replacement: <SWITCH_IP>:9116
 
   - job_name: sonic_hardware
     static_configs:
-      - targets: [100.105.8.4]
+      - targets: [<SWITCH_IP>]
     metrics_path: /snmp
     params:
       module: [sonic_hardware]
@@ -659,27 +644,27 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 100.105.8.4:9116
+        replacement: <SWITCH_IP>:9116
 
   - job_name: sonic_ddm
     static_configs:
-      - targets: [100.105.8.4]
+      - targets: [<SWITCH_IP>]
     metrics_path: /snmp
     params:
       module: [sonic_ddm]
       auth: [public_v2]
-    scrape_interval: 60s   # DDM 不需要太频繁
+    scrape_interval: 60s
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 100.105.8.4:9116
+        replacement: <SWITCH_IP>:9116
 
   - job_name: sonic_tables
     static_configs:
-      - targets: [100.105.8.4]
+      - targets: [<SWITCH_IP>]
     metrics_path: /snmp
     params:
       module: [sonic_tables]
@@ -691,28 +676,45 @@ scrape_configs:
       - source_labels: [__param_target]
         target_label: instance
       - target_label: __address__
-        replacement: 100.105.8.4:9116
-```
-- you must create a prometheus.yml file in your prometheus folder
-- This is my pwd:  /home/cat/datahub/prometheus/prometheus.yml
+        replacement: <SWITCH_IP>:9116
 
-#### Config Prometheus rules ####
-- cd your prometheus pwd: cd /home/cat/datahub/prometheus and vi rules.yml
-```bash
+  - job_name: sonic_routing
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_routing]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+```
+
+> ⚠️ Replace `<SWITCH_IP>` with your actual switch IP (e.g. `100.105.8.4`)
+
+### 3.2 rules.yml - Prometheus Server
+
+Location: `/etc/prometheus/rules.yml`
+
+```yaml
 groups:
   - name: sonic_table_counts
     interval: 60s
     rules:
       - record: sonic_arp_count
-        expr: count(ipNetToPhysicalType{instance="100.105.8.4"})
-      # sonic_mac_count: no MAC table data on this device
-      # sonic_vlan_count: no VLAN data on this device
-      # sonic_ipv4_route_count: no route table data on this device
+        expr: count(ipNetToPhysicalType{instance="<SWITCH_IP>"})
+      # sonic_mac_count: uncomment when MAC table data is available
+      # sonic_vlan_count: uncomment when VLAN data is available
+      # sonic_ipv4_route_count: uncomment when route table data is available
 
   - name: sonic_alerts
     rules:
       - alert: InterfaceDown
-        expr: ifOperStatus{instance="100.105.8.4", ifName!="eth0"} == 2
+        expr: ifOperStatus{instance="<SWITCH_IP>", ifName!="eth0"} == 2
         for: 2m
         labels:
           severity: warning
@@ -720,7 +722,7 @@ groups:
           summary: "Interface {{ $labels.ifName }} is down"
 
       - alert: CPUHigh
-        expr: (100 - ucdCpuIdle{instance="100.105.8.4"}) > 90
+        expr: (100 - ucdCpuIdle{instance="<SWITCH_IP>"}) > 90
         for: 5m
         labels:
           severity: warning
@@ -728,7 +730,7 @@ groups:
           summary: "CPU usage above 90%: {{ $value }}%"
 
       - alert: MemoryHigh
-        expr: (1 - ucdMemAvailReal{instance="100.105.8.4"} / ucdMemTotalReal{instance="100.105.8.4"}) * 100 > 85
+        expr: (1 - ucdMemAvailReal{instance="<SWITCH_IP>"} / ucdMemTotalReal{instance="<SWITCH_IP>"}) * 100 > 85
         for: 5m
         labels:
           severity: warning
@@ -736,7 +738,7 @@ groups:
           summary: "Memory usage above 85%: {{ $value }}%"
 
       - alert: PSUDown
-        expr: psu1PowerStatus{instance="100.105.8.4"} != 1 or psu2PowerStatus{instance="100.105.8.4"} != 1
+        expr: psu1PowerStatus{instance="<SWITCH_IP>"} != 1 or psu2PowerStatus{instance="<SWITCH_IP>"} != 1
         for: 1m
         labels:
           severity: critical
@@ -744,7 +746,7 @@ groups:
           summary: "PSU power status abnormal"
 
       - alert: BGPPeerDown
-        expr: bgpPeerState{instance="100.105.8.4"} != 6
+        expr: bgpPeerState{instance="<SWITCH_IP>"} != 6
         for: 2m
         labels:
           severity: critical
@@ -752,7 +754,7 @@ groups:
           summary: "BGP peer {{ $labels.bgpPeerRemoteAddr }} not in established state"
 
       - alert: TempHigh
-        expr: lmTempSensorsValue{instance="100.105.8.4"} / 1000 > 75
+        expr: lmTempSensorsValue{instance="<SWITCH_IP>"} / 1000 > 75
         for: 5m
         labels:
           severity: warning
@@ -760,7 +762,7 @@ groups:
           summary: "Temperature sensor {{ $labels.lmTempSensorsIndex }} above 75C: {{ $value }}C"
 
       - alert: FanDown
-        expr: fan1Status{instance="100.105.8.4"} != 1 or fan2Status{instance="100.105.8.4"} != 1
+        expr: fan1Status{instance="<SWITCH_IP>"} != 1 or fan2Status{instance="<SWITCH_IP>"} != 1
         for: 1m
         labels:
           severity: critical
@@ -776,417 +778,117 @@ groups:
           summary: "SNMP scrape failed for job {{ $labels.job }} instance {{ $labels.instance }}"
 ```
 
-------------------------
+### 3.3 Apply configuration - Prometheus Server
 
 ```bash
+# If running as Docker container
 docker restart prometheus
+
+# Or reload without restart
+curl -X POST http://localhost:9090/-/reload
+
+# Verify targets are UP
+# Go to: http://<PROMETHEUS_IP>:9090/targets
 ```
----
-- Go to your prometheus address: 192.168.x.x:9090/targets
+
+- You can see all modules up!
 <img width="1881" height="766" alt="image" src="https://github.com/user-attachments/assets/f5a989bd-2790-4a88-b9ba-55508c2eacb8" />
 
-- It shows up for Endpoint
 
-#### LoginServer - Config Grafana ####
-- Go to Grafana IP: 192.168.x:3000 - connections - add new conn
-- Search Prometheus - click Prometheus - add new datasource - Put your prometheus ip add on the address
-- Go to Dashboard - new dashboard - import dashboardjson * for an example:
-```bash
-{
-  "dashboard": {
-    "title": "SONiC Switch Monitor",
-    "uid": "sonic-switch-01",
-    "tags": ["sonic", "snmp", "network"],
-    "timezone": "browser",
-    "refresh": "30s",
-    "schemaVersion": 38,
-    "templating": {
-      "list": [
-        {
-          "name": "instance",
-          "type": "query",
-          "label": "Switch",
-          "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-          "query": "label_values(ifOperStatus, instance)",
-          "refresh": 2,
-          "sort": 1,
-          "current": {}
-        },
-        {
-          "name": "ifName",
-          "type": "query",
-          "label": "Interface",
-          "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-          "query": "label_values(ifOperStatus{instance=\"$instance\", ifName!=\"eth0\"}, ifName)",
-          "multi": true,
-          "includeAll": true,
-          "allValue": "Ethernet.*",
-          "refresh": 2,
-          "sort": 3,
-          "current": {}
-        }
-      ]
-    },
-    "panels": [
-      {
-        "id": 1,
-        "title": "Interface Status",
-        "type": "stat",
-        "gridPos": {"x": 0, "y": 0, "w": 24, "h": 5},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "sort_desc(ifOperStatus{instance=\"$instance\", ifName=~\"Ethernet.*\"})",
-            "legendFormat": "{{ifName}}",
-            "instant": true
-          }
-        ],
-        "options": {
-          "reduceOptions": {"calcs": ["lastNotNull"]},
-          "colorMode": "background",
-          "graphMode": "none",
-          "textMode": "name",
-          "orientation": "auto"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "mappings": [
-              {
-                "type": "value",
-                "options": {
-                  "1": {"text": "UP", "color": "green", "index": 0},
-                  "2": {"text": "DOWN", "color": "red", "index": 1}
-                }
-              }
-            ],
-            "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
-          }
-        }
-      },
-      {
-        "id": 2,
-        "title": "CPU Usage %",
-        "type": "timeseries",
-        "gridPos": {"x": 0, "y": 5, "w": 8, "h": 7},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {"expr": "100 - ucdCpuIdle{instance=\"$instance\"}", "legendFormat": "Total"},
-          {"expr": "ucdCpuUser{instance=\"$instance\"}", "legendFormat": "User"},
-          {"expr": "ucdCpuSystem{instance=\"$instance\"}", "legendFormat": "System"},
-          {"expr": "ucdCpuIoWait{instance=\"$instance\"}", "legendFormat": "IoWait"}
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent", "min": 0, "max": 100,
-            "custom": {"lineWidth": 1, "fillOpacity": 10},
-            "thresholds": {"mode": "absolute", "steps": [
-              {"color": "green", "value": null},
-              {"color": "orange", "value": 80},
-              {"color": "red", "value": 90}
-            ]}
-          }
-        }
-      },
-      {
-        "id": 3,
-        "title": "Memory Usage %",
-        "type": "timeseries",
-        "gridPos": {"x": 8, "y": 5, "w": 8, "h": 7},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "(1 - ucdMemAvailReal{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"}) * 100",
-            "legendFormat": "Used %"
-          },
-          {
-            "expr": "ucdMemBuffer{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"} * 100",
-            "legendFormat": "Buffer %"
-          },
-          {
-            "expr": "ucdMemCached{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"} * 100",
-            "legendFormat": "Cached %"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "percent", "min": 0, "max": 100,
-            "custom": {"lineWidth": 1, "fillOpacity": 10},
-            "thresholds": {"mode": "absolute", "steps": [
-              {"color": "green", "value": null},
-              {"color": "orange", "value": 75},
-              {"color": "red", "value": 85}
-            ]}
-          }
-        }
-      },
-      {
-        "id": 4,
-        "title": "Temperature Sensors (C)",
-        "type": "timeseries",
-        "gridPos": {"x": 16, "y": 5, "w": 8, "h": 7},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "lmTempSensorsValue{instance=\"$instance\"} / 1000",
-            "legendFormat": "Sensor {{lmTempSensorsIndex}}"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "celsius",
-            "custom": {"lineWidth": 1, "fillOpacity": 10},
-            "thresholds": {"mode": "absolute", "steps": [
-              {"color": "green", "value": null},
-              {"color": "orange", "value": 75},
-              {"color": "red", "value": 85}
-            ]}
-          }
-        }
-      },
-      {
-        "id": 5,
-        "title": "PSU Status",
-        "type": "stat",
-        "gridPos": {"x": 0, "y": 12, "w": 6, "h": 4},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {"expr": "psu1PowerStatus{instance=\"$instance\"}", "legendFormat": "PSU 1", "instant": true},
-          {"expr": "psu2PowerStatus{instance=\"$instance\"}", "legendFormat": "PSU 2", "instant": true}
-        ],
-        "options": {
-          "reduceOptions": {"calcs": ["lastNotNull"]},
-          "colorMode": "background",
-          "graphMode": "none"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "mappings": [
-              {
-                "type": "value",
-                "options": {
-                  "1": {"text": "Normal", "color": "green", "index": 0},
-                  "2": {"text": "Warning", "color": "orange", "index": 1},
-                  "3": {"text": "Critical", "color": "red", "index": 2},
-                  "4": {"text": "Shutdown", "color": "red", "index": 3},
-                  "5": {"text": "Not Present", "color": "grey", "index": 4},
-                  "6": {"text": "Not Functioning", "color": "red", "index": 5}
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        "id": 6,
-        "title": "Fan Status",
-        "type": "stat",
-        "gridPos": {"x": 6, "y": 12, "w": 6, "h": 4},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {"expr": "fan1Status{instance=\"$instance\"}", "legendFormat": "Fan 1", "instant": true},
-          {"expr": "psu1FanStatus{instance=\"$instance\"}", "legendFormat": "PSU1 Fan", "instant": true},
-          {"expr": "psu2FanStatus{instance=\"$instance\"}", "legendFormat": "PSU2 Fan", "instant": true}
-        ],
-        "options": {
-          "reduceOptions": {"calcs": ["lastNotNull"]},
-          "colorMode": "background",
-          "graphMode": "none"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "mappings": [
-              {
-                "type": "value",
-                "options": {
-                  "1": {"text": "OK", "color": "green", "index": 0},
-                  "2": {"text": "Unavailable", "color": "orange", "index": 1},
-                  "3": {"text": "Failed", "color": "red", "index": 2}
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        "id": 7,
-        "title": "Fan Speed (RPM)",
-        "type": "bargauge",
-        "gridPos": {"x": 12, "y": 12, "w": 6, "h": 4},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {"expr": "fan1Rpm{instance=\"$instance\"}", "legendFormat": "Fan 1", "instant": true},
-          {"expr": "psu1FanRpm{instance=\"$instance\"}", "legendFormat": "PSU1 Fan", "instant": true},
-          {"expr": "psu2FanRpm{instance=\"$instance\"}", "legendFormat": "PSU2 Fan", "instant": true},
-          {"expr": "lmFanSensorsValue{instance=\"$instance\"}", "legendFormat": "Sensor {{lmFanSensorsIndex}}", "instant": true}
-        ],
-        "options": {
-          "reduceOptions": {"calcs": ["lastNotNull"]},
-          "orientation": "horizontal",
-          "displayMode": "gradient"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "unit": "rotrpm",
-            "thresholds": {"mode": "absolute", "steps": [
-              {"color": "green", "value": null},
-              {"color": "red", "value": 0}
-            ]}
-          }
-        }
-      },
-      {
-        "id": 8,
-        "title": "PSU Voltage & Temp",
-        "type": "stat",
-        "gridPos": {"x": 18, "y": 12, "w": 6, "h": 4},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {"expr": "psu1Temp{instance=\"$instance\"} / 1000", "legendFormat": "PSU1 Temp C", "instant": true},
-          {"expr": "psu2Temp{instance=\"$instance\"} / 1000", "legendFormat": "PSU2 Temp C", "instant": true}
-        ],
-        "options": {
-          "reduceOptions": {"calcs": ["lastNotNull"]},
-          "colorMode": "value",
-          "graphMode": "none"
-        },
-        "fieldConfig": {
-          "defaults": {"unit": "celsius"}
-        }
-      },
-      {
-        "id": 9,
-        "title": "OSPF Status",
-        "type": "stat",
-        "gridPos": {"x": 0, "y": 16, "w": 6, "h": 4},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {"expr": "ospfAdminStat{instance=\"$instance\"}", "legendFormat": "OSPF Admin", "instant": true}
-        ],
-        "options": {
-          "reduceOptions": {"calcs": ["lastNotNull"]},
-          "colorMode": "background",
-          "graphMode": "none"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "mappings": [
-              {
-                "type": "value",
-                "options": {
-                  "1": {"text": "Enabled", "color": "green", "index": 0},
-                  "2": {"text": "Disabled", "color": "red", "index": 1}
-                }
-              }
-            ]
-          }
-        }
-      },
-      {
-        "id": 10,
-        "title": "Interface RX Traffic (bps)",
-        "type": "timeseries",
-        "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "rate(ifHCInOctets{instance=\"$instance\", ifName=~\"$ifName\"}[5m]) * 8",
-            "legendFormat": "{{ifName}}"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "bps",
-            "custom": {"lineWidth": 1, "fillOpacity": 5}
-          }
-        },
-        "options": {"tooltip": {"mode": "multi", "sort": "desc"}}
-      },
-      {
-        "id": 11,
-        "title": "Interface TX Traffic (bps)",
-        "type": "timeseries",
-        "gridPos": {"x": 12, "y": 20, "w": 12, "h": 8},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "rate(ifHCOutOctets{instance=\"$instance\", ifName=~\"$ifName\"}[5m]) * 8",
-            "legendFormat": "{{ifName}}"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "bps",
-            "custom": {"lineWidth": 1, "fillOpacity": 5}
-          }
-        },
-        "options": {"tooltip": {"mode": "multi", "sort": "desc"}}
-      },
-      {
-        "id": 12,
-        "title": "Interface RX Packets/s",
-        "type": "timeseries",
-        "gridPos": {"x": 0, "y": 28, "w": 12, "h": 8},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "rate(ifHCInUcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
-            "legendFormat": "{{ifName}} Ucast"
-          },
-          {
-            "expr": "rate(ifHCInMulticastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
-            "legendFormat": "{{ifName}} Mcast"
-          },
-          {
-            "expr": "rate(ifHCInBroadcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
-            "legendFormat": "{{ifName}} Bcast"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "pps",
-            "custom": {"lineWidth": 1, "fillOpacity": 5}
-          }
-        }
-      },
-      {
-        "id": 13,
-        "title": "Interface TX Packets/s",
-        "type": "timeseries",
-        "gridPos": {"x": 12, "y": 28, "w": 12, "h": 8},
-        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
-        "targets": [
-          {
-            "expr": "rate(ifHCOutUcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
-            "legendFormat": "{{ifName}} Ucast"
-          },
-          {
-            "expr": "rate(ifHCOutMulticastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
-            "legendFormat": "{{ifName}} Mcast"
-          },
-          {
-            "expr": "rate(ifHCOutBroadcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
-            "legendFormat": "{{ifName}} Bcast"
-          }
-        ],
-        "fieldConfig": {
-          "defaults": {
-            "unit": "pps",
-            "custom": {"lineWidth": 1, "fillOpacity": 5}
-          }
-        }
-      }
-    ]
-  },
-  "folderId": 0,
-  "overwrite": true
-}
-```
 ---
+
+## 4️⃣ Grafana — Dashboard Setup 
+
+### 4.1 Add Prometheus data source
+
+1. Go to **Connections → Data Sources → Add data source**
+2. Select **Prometheus**
+3. Set URL: `http://<PROMETHEUS_IP>:9090`
+4. Click **Save & Test**
+
+Get the datasource UID:
+
+```bash
+curl -s -u admin:admin http://<GRAFANA_IP>:3000/api/datasources | python3 -m json.tool | grep '"uid"'
+```
+
+### 4.2 Import dashboard via API
+
+Replace `<DS_UID>` with your Prometheus datasource UID, then push:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -u admin:admin \
+  http://<GRAFANA_IP>:3000/api/dashboards/db \
+  -d @dashboard.json
+```
+
 <img width="1575" height="868" alt="image" src="https://github.com/user-attachments/assets/0bc4cd4b-07b8-497e-8219-c6be9089a53d" />
 
-- This is just a demo for dashboard
+---
 
+The dashboard includes the following panels:
 
+| Panel | Metrics |
+|-------|---------|
+| Interface Status | `ifOperStatus` — UP/DOWN color-coded per port |
+| CPU Usage % | `ucdCpuIdle/User/System/IoWait` |
+| Memory Usage % | `ucdMemAvailReal / ucdMemTotalReal` |
+| Temperature Sensors | `lmTempSensorsValue / 1000` |
+| PSU Status | `psu1/2PowerStatus` — color-mapped |
+| Fan Status | `fan1Status / psu1/2FanStatus` |
+| Fan Speed (RPM) | `fan1Rpm / lmFanSensorsValue` |
+| PSU Temperature | `psu1/2Temp / 1000` |
+| OSPF Status | `ospfAdminStat` |
+| Interface RX/TX Traffic | `ifHCInOctets / ifHCOutOctets` (bps) |
+| Interface RX/TX Packets | Ucast + Mcast + Bcast breakdown (pps) |
+
+---
+
+## 📊 Module Coverage Summary
+
+| Module | MIB | Key Metrics |
+|--------|-----|-------------|
+| `sonic_if` | IF-MIB / ifXTable | Interface status, traffic counters, errors |
+| `sonic_system` | UCD-SNMP / HR-MIB | CPU, memory, uptime |
+| `sonic_sensors` | LM-SENSORS / Entity Sensor | Temperature, fan RPM, voltage |
+| `sonic_hardware` | Entity Sensor / Cisco MIB | PSU status, PSU fan, PSU temp/voltage |
+| `sonic_ddm` | Entity Sensor | SFP TxPower, RxPower, Bias, Temp |
+| `sonic_tables` | IP-MIB | ARP/Neighbor table entries |
+| `sonic_routing` | BGP4-MIB / OSPF-MIB | BGP peer state, OSPF admin status |
+
+---
+
+## 🔍 Troubleshooting
+
+```bash
+# Test snmp-exporter manually
+curl "http://<SWITCH_IP>:9116/snmp?target=<SWITCH_IP>&module=sonic_if&auth=public_v2"
+
+# Check snmp-exporter logs
+docker logs snmp-exporter --tail 20
+
+# Verify SNMP is responding on the switch
+snmpwalk -v2c -c public <SWITCH_IP> 1.3.6.1.2.1.1.1.0
+
+# Check Prometheus rules loaded correctly
+curl -s http://localhost:9090/api/v1/rules | python3 -m json.tool | grep '"name"'
+
+# Check all targets status
+curl -s http://localhost:9090/api/v1/targets | python3 -m json.tool | grep -E '"health"|"job"'
+```
+
+---
+
+## 📝 Notes
+
+- snmp-exporter v0.26+ requires the `auths:` block; older versions do not support it
+- SONiC does not implement `dot1qTpFdbTable` (MAC) or `dot1qVlanStaticTable` (VLAN) on all platforms — verify with `snmpwalk` before adding to config
+- DDM sensor OIDs use Entity Sensor MIB instance IDs that are platform-specific; walk `1.3.6.1.2.1.99.1.1.1.4` to discover all available sensors
+- Temperature values from `lmTempSensorsValue` are in milli-Celsius — divide by 1000 in Grafana or recording rules
+- BGP and OSPF data only appears when the protocols are configured and active on the switch
+- `InterfaceDown` alert is suppressed for `eth0` (management interface) by design
 
 
 
