@@ -69,16 +69,19 @@ auths:
     community: public
 
 modules:
+
+  # ============================================================
+  # Module 1: 接口流量 & 状态（已有基础上完善）
+  # ============================================================
   sonic_if:
     walk:
-      - 1.3.6.1.2.1.2
-      - 1.3.6.1.2.1.31
-
+      - 1.3.6.1.2.1.2.2      # ifTable (ifOperStatus 等)
+      - 1.3.6.1.2.1.31.1.1   # ifXTable (ifName, ifHCInOctets 等)
     metrics:
-
       - name: ifName
         oid: 1.3.6.1.2.1.31.1.1.1.1
         type: DisplayString
+        help: Interface name
         indexes:
           - labelname: ifIndex
             type: gauge
@@ -86,13 +89,7 @@ modules:
       - name: ifOperStatus
         oid: 1.3.6.1.2.1.2.2.1.8
         type: gauge
-        indexes:
-          - labelname: ifIndex
-            type: gauge
-
-      - name: ifHCInOctets
-        oid: 1.3.6.1.2.1.31.1.1.1.6
-        type: counter
+        help: "Interface operational status: 1=up, 2=down"
         indexes:
           - labelname: ifIndex
             type: gauge
@@ -100,13 +97,428 @@ modules:
           - labels: [ifIndex]
             labelname: ifName
             oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifAdminStatus
+        oid: 1.3.6.1.2.1.2.2.1.7
+        type: gauge
+        help: "Interface admin status: 1=up, 2=down"
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCInOctets
+        oid: 1.3.6.1.2.1.31.1.1.1.6
+        type: counter
+        help: Total bytes received (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
 
       - name: ifHCOutOctets
         oid: 1.3.6.1.2.1.31.1.1.1.10
         type: counter
+        help: Total bytes sent (64-bit)
         indexes:
           - labelname: ifIndex
             type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCInUcastPkts
+        oid: 1.3.6.1.2.1.31.1.1.1.7
+        type: counter
+        help: Unicast packets received (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCOutUcastPkts
+        oid: 1.3.6.1.2.1.31.1.1.1.11
+        type: counter
+        help: Unicast packets sent (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifInErrors
+        oid: 1.3.6.1.2.1.2.2.1.14
+        type: counter
+        help: Inbound errors
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifOutErrors
+        oid: 1.3.6.1.2.1.2.2.1.20
+        type: counter
+        help: Outbound errors
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHighSpeed
+        oid: 1.3.6.1.2.1.31.1.1.1.15
+        type: gauge
+        help: Interface speed in Mbps
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+  # ============================================================
+  # Module 2: CPU & 内存（UCD-SNMP MIB）
+  # ============================================================
+  sonic_system:
+    walk:
+      - 1.3.6.1.4.1.2021.11   # CPU (UCD-SNMP)
+      - 1.3.6.1.4.1.2021.4    # Memory (UCD-SNMP)
+      - 1.3.6.1.2.1.25.2.3    # hrStorageTable
+      - 1.3.6.1.2.1.1         # sysDescr, sysUpTime
+    metrics:
+      # --- CPU ---
+      - name: ucdCpuIdle
+        oid: 1.3.6.1.4.1.2021.11.11.0
+        type: gauge
+        help: CPU idle percentage
+
+      - name: ucdCpuUser
+        oid: 1.3.6.1.4.1.2021.11.9.0
+        type: gauge
+        help: CPU user percentage
+
+      - name: ucdCpuSystem
+        oid: 1.3.6.1.4.1.2021.11.10.0
+        type: gauge
+        help: CPU system percentage
+
+      - name: ucdCpuIoWait
+        oid: 1.3.6.1.4.1.2021.11.54.0
+        type: gauge
+        help: CPU iowait percentage
+
+      # --- Memory (UCD) ---
+      - name: ucdMemTotalReal
+        oid: 1.3.6.1.4.1.2021.4.5.0
+        type: gauge
+        help: Total real memory (kB)
+
+      - name: ucdMemAvailReal
+        oid: 1.3.6.1.4.1.2021.4.6.0
+        type: gauge
+        help: Available real memory (kB)
+
+      - name: ucdMemTotalFree
+        oid: 1.3.6.1.4.1.2021.4.11.0
+        type: gauge
+        help: Total free memory including swap (kB)
+
+      - name: ucdMemBuffer
+        oid: 1.3.6.1.4.1.2021.4.14.0
+        type: gauge
+        help: Memory used for buffers (kB)
+
+      - name: ucdMemCached
+        oid: 1.3.6.1.4.1.2021.4.15.0
+        type: gauge
+        help: Memory used for cache (kB)
+
+      # --- hrStorage (内存占用 index=54) ---
+      - name: hrStorageSize
+        oid: 1.3.6.1.2.1.25.2.3.1.5
+        type: gauge
+        help: Storage size in allocation units
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+
+      - name: hrStorageUsed
+        oid: 1.3.6.1.2.1.25.2.3.1.6
+        type: gauge
+        help: Storage used in allocation units
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+
+      # --- System ---
+      - name: sysUpTimeInstance
+        oid: 1.3.6.1.2.1.1.3.0
+        type: gauge
+        help: System uptime in hundredths of a second
+
+  # ============================================================
+  # Module 3: 温度传感器（UCD lmSensors + Entity Sensor MIB）
+  # ============================================================
+  sonic_sensors:
+    walk:
+      - 1.3.6.1.4.1.2021.13.16.2  # lmTempSensorsTable
+      - 1.3.6.1.4.1.2021.13.16.3  # lmFanSensorsTable
+      - 1.3.6.1.4.1.2021.13.16.4  # lmVoltSensorsTable
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue (温度/PSU/DDM)
+    metrics:
+      # UCD lmSensors 温度
+      - name: lmTempSensorsValue
+        oid: 1.3.6.1.4.1.2021.13.16.2.1.3
+        type: gauge
+        help: Temperature sensor value (milli-Celsius, divide by 1000 for C)
+        indexes:
+          - labelname: lmTempSensorsIndex
+            type: gauge
+
+      # UCD lmSensors 风扇
+      - name: lmFanSensorsValue
+        oid: 1.3.6.1.4.1.2021.13.16.3.1.3
+        type: gauge
+        help: Fan speed sensor value (RPM)
+        indexes:
+          - labelname: lmFanSensorsIndex
+            type: gauge
+
+      # UCD lmSensors 电压
+      - name: lmVoltSensorsValue
+        oid: 1.3.6.1.4.1.2021.13.16.4.1.3
+        type: gauge
+        help: Voltage sensor value (mV)
+        indexes:
+          - labelname: lmVoltSensorsIndex
+            type: gauge
+
+      # Entity Sensor - 温度传感器 (index 200990110~200990710)
+      - name: entPhySensorValue
+        oid: 1.3.6.1.2.1.99.1.1.1.4
+        type: gauge
+        help: Entity physical sensor value (raw)
+        indexes:
+          - labelname: entPhySensorIndex
+            type: gauge
+
+      # Entity Sensor - 状态
+      - name: entPhySensorOperStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5
+        type: gauge
+        help: "Entity sensor operational status: 1=ok, 2=unavailable, 3=nonoperational"
+        indexes:
+          - labelname: entPhySensorIndex
+            type: gauge
+
+# ============================================================
+  # Module 5: PSU / FAN / 硬件状态（Entity Sensor MIB）
+  # ============================================================
+  sonic_hardware:
+    walk:
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue / Status (所有硬件传感器)
+      - 1.3.6.1.4.1.9.9.117.1.1.2 # Cisco PSU power status MIB
+    metrics:
+      # FAN 1 转速
+      - name: fan1Rpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.499019920
+        type: gauge
+        help: Fan 1 speed (RPM)
+
+      # FAN 1 状态
+      - name: fan1Status
+        oid: 1.3.6.1.2.1.99.1.1.1.5.499019920
+        type: gauge
+        help: "Fan 1 status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # FAN 2 转速
+      - name: fan2Rpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
+        type: gauge
+        help: Fan 2 speed (RPM)
+
+      # FAN 2 状态
+      - name: fan2Status
+        oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
+        type: gauge
+        help: "Fan 2 status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # PSU 1 风扇转速
+      - name: psu1FanRpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.601019920
+        type: gauge
+        help: PSU 1 fan speed (RPM)
+
+      # PSU 1 风扇状态
+      - name: psu1FanStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5.601019920
+        type: gauge
+        help: "PSU 1 fan status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # PSU 1 电源状态 (Cisco MIB)
+      - name: psu1PowerStatus
+        oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.1
+        type: gauge
+        help: "PSU 1 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
+
+      # PSU 1 温度
+      - name: psu1Temp
+        oid: 1.3.6.1.2.1.99.1.1.1.4.601240010
+        type: gauge
+        help: PSU 1 temperature (raw, divide by 1000 for C)
+
+      # PSU 1 电压
+      - name: psu1Voltage
+        oid: 1.3.6.1.2.1.99.1.1.1.4.601240050
+        type: gauge
+        help: PSU 1 voltage (raw, divide by 1000 for V)
+
+      # PSU 2 风扇转速
+      - name: psu2FanRpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
+        type: gauge
+        help: PSU 2 fan speed (RPM)
+
+      # PSU 2 风扇状态
+      - name: psu2FanStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
+        type: gauge
+        help: "PSU 2 fan status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # PSU 2 电源状态
+      - name: psu2PowerStatus
+        oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.2
+        type: gauge
+        help: "PSU 2 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
+
+      # PSU 2 温度
+      - name: psu2Temp
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602240010
+        type: gauge
+        help: PSU 2 temperature (raw, divide by 1000 for C)
+
+      # PSU 2 电压
+      - name: psu2Voltage
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602240050
+        type: gauge
+        help: PSU 2 voltage (raw, divide by 1000 for V)
+
+  # ============================================================
+  # Module 6: DDM 光模块（Entity Sensor MIB，walk 整棵树）
+  # ============================================================
+  sonic_ddm:
+    walk:
+      - 1.3.6.1.2.1.99.1.1.1.4    # entPhySensorValue (含所有DDM实例)
+      - 1.3.6.1.2.1.99.1.1.1.5    # entPhySensorOperStatus
+    metrics:
+      - name: ddmSensorValue
+        oid: 1.3.6.1.2.1.99.1.1.1.4
+        type: gauge
+        help: DDM sensor raw value (TxPower/RxPower/Bias/Temp，需按index换算单位)
+        indexes:
+          - labelname: ddmSensorIndex
+            type: gauge
+
+      - name: ddmSensorStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5
+        type: gauge
+        help: "DDM sensor status: 1=ok, 2=unavailable, 3=nonoperational"
+        indexes:
+          - labelname: ddmSensorIndex
+            type: gauge
+
+  # ============================================================
+  # Module 7: 表项计数（ARP / MAC / VLAN / 路由）
+  # ============================================================
+  sonic_tables:
+    walk:
+      - 1.3.6.1.2.1.4.22.1.2
+      - 1.3.6.1.2.1.4.24.2
+      - 1.3.6.1.2.1.4.34
+      - 1.3.6.1.2.1.17.7.1.2.2
+      - 1.3.6.1.2.1.17.7.1.1.4
+      - 1.3.6.1.4.1.4413.1.2.2.1.1.1.1
+
+  sonic_routing:
+    walk:
+      - 1.3.6.1.2.1.15.2.0    # bgpLocalAs
+      - 1.3.6.1.2.1.15.3      # bgpPeerTable
+      - 1.3.6.1.2.1.14.1.1.0  # ospfRouterId
+      - 1.3.6.1.2.1.14.1.2.0  # ospfAdminStat
+    metrics:
+      - name: bgpLocalAs
+        oid: 1.3.6.1.2.1.15.2.0
+        type: gauge
+        help: BGP local AS number
+
+      - name: bgpPeerState
+        oid: 1.3.6.1.2.1.15.3.1.2
+        type: gauge
+        help: "BGP peer state: 1=idle,2=connect,3=active,4=opensent,5=openconfirm,6=established"
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: bgpPeerAdminStatus
+        oid: 1.3.6.1.2.1.15.3.1.3
+        type: gauge
+        help: "BGP peer admin status: 1=stop, 2=start"
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: bgpPeerInUpdates
+        oid: 1.3.6.1.2.1.15.3.1.10
+        type: counter
+        help: BGP updates received from peer
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: bgpPeerOutUpdates
+        oid: 1.3.6.1.2.1.15.3.1.11
+        type: counter
+        help: BGP updates sent to peer
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: ospfAdminStat
+        oid: 1.3.6.1.2.1.14.1.2.0
+        type: gauge
+        help: "OSPF admin status: 1=enabled, 2=disabled"
+
+      - name: ospfRouterId
+        oid: 1.3.6.1.2.1.14.1.1.0
+        type: DisplayString
+        help: OSPF router ID
 ```
 
 #### On Micas W6510-32C Switch m65_1$ ####
@@ -165,39 +577,215 @@ Performance CPU 0.00%, MEM 0.6% so it was not very occupied and just little reso
 
 #### LoginServer - Config Prometheus ####
 ```bash
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/rules.yml
+
 scrape_configs:
-  - job_name: 'sonic_snmp'
-
-    metrics_path: /snmp
-
-    params:
-      module: [sonic_if]   # 👈 snmp.yml module
-      auth: [public_v2]
-
+  - job_name: sonic_interfaces
     static_configs:
       - targets:
-        - 192.168.1.124   # 👈 SONiC IP
-
+          - 100.105.8.4   # 交换机 IP
+    metrics_path: /snmp
+    params:
+      module: [sonic_if]
+      auth: [public_v2]
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
-
       - source_labels: [__param_target]
         target_label: instance
-
       - target_label: __address__
-        replacement: 192.168.1.124:9116   # 👈 snmp-exporter address
+        replacement: 100.105.8.4:9116
+
+  - job_name: sonic_system
+    static_configs:
+      - targets: [100.105.8.4]
+    metrics_path: /snmp
+    params:
+      module: [sonic_system]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 100.105.8.4:9116
+
+  - job_name: sonic_sensors
+    static_configs:
+      - targets: [100.105.8.4]
+    metrics_path: /snmp
+    params:
+      module: [sonic_sensors]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 100.105.8.4:9116
+
+  - job_name: sonic_routing
+    static_configs:
+      - targets: [100.105.8.4]
+    metrics_path: /snmp
+    params:
+      module: [sonic_routing]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 100.105.8.4:9116
+
+  - job_name: sonic_hardware
+    static_configs:
+      - targets: [100.105.8.4]
+    metrics_path: /snmp
+    params:
+      module: [sonic_hardware]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 100.105.8.4:9116
+
+  - job_name: sonic_ddm
+    static_configs:
+      - targets: [100.105.8.4]
+    metrics_path: /snmp
+    params:
+      module: [sonic_ddm]
+      auth: [public_v2]
+    scrape_interval: 60s   # DDM 不需要太频繁
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 100.105.8.4:9116
+
+  - job_name: sonic_tables
+    static_configs:
+      - targets: [100.105.8.4]
+    metrics_path: /snmp
+    params:
+      module: [sonic_tables]
+      auth: [public_v2]
+    scrape_interval: 60s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 100.105.8.4:9116
 ```
 - you must create a prometheus.yml file in your prometheus folder
 - This is my pwd:  /home/cat/datahub/prometheus/prometheus.yml
-  
+
+#### Config Prometheus rules ####
+- cd your prometheus pwd: cd /home/cat/datahub/prometheus and vi rules.yml
+```bash
+groups:
+  - name: sonic_table_counts
+    interval: 60s
+    rules:
+      - record: sonic_arp_count
+        expr: count(ipNetToPhysicalType{instance="100.105.8.4"})
+      # sonic_mac_count: no MAC table data on this device
+      # sonic_vlan_count: no VLAN data on this device
+      # sonic_ipv4_route_count: no route table data on this device
+
+  - name: sonic_alerts
+    rules:
+      - alert: InterfaceDown
+        expr: ifOperStatus{instance="100.105.8.4", ifName!="eth0"} == 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Interface {{ $labels.ifName }} is down"
+
+      - alert: CPUHigh
+        expr: (100 - ucdCpuIdle{instance="100.105.8.4"}) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 90%: {{ $value }}%"
+
+      - alert: MemoryHigh
+        expr: (1 - ucdMemAvailReal{instance="100.105.8.4"} / ucdMemTotalReal{instance="100.105.8.4"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 85%: {{ $value }}%"
+
+      - alert: PSUDown
+        expr: psu1PowerStatus{instance="100.105.8.4"} != 1 or psu2PowerStatus{instance="100.105.8.4"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PSU power status abnormal"
+
+      - alert: BGPPeerDown
+        expr: bgpPeerState{instance="100.105.8.4"} != 6
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "BGP peer {{ $labels.bgpPeerRemoteAddr }} not in established state"
+
+      - alert: TempHigh
+        expr: lmTempSensorsValue{instance="100.105.8.4"} / 1000 > 75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Temperature sensor {{ $labels.lmTempSensorsIndex }} above 75C: {{ $value }}C"
+
+      - alert: FanDown
+        expr: fan1Status{instance="100.105.8.4"} != 1 or fan2Status{instance="100.105.8.4"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fan status abnormal"
+
+      - alert: SnmpScrapeDown
+        expr: up{job=~"sonic_.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SNMP scrape failed for job {{ $labels.job }} instance {{ $labels.instance }}"
+```
+
+------------------------
+
 ```bash
 docker restart prometheus
 ```
 ---
 - Go to your prometheus address: 192.168.x.x:9090/targets
-<img width="1899" height="294" alt="image" src="https://github.com/user-attachments/assets/ba7c44d3-cc94-4715-bda2-5cc60fd11577" />
-- It shows up for this Endpoint
+<img width="1881" height="766" alt="image" src="https://github.com/user-attachments/assets/f5a989bd-2790-4a88-b9ba-55508c2eacb8" />
+
+- It shows up for Endpoint
 
 #### LoginServer - Config Grafana ####
 - Go to Grafana IP: 192.168.x:3000 - connections - add new conn
@@ -205,585 +793,396 @@ docker restart prometheus
 - Go to Dashboard - new dashboard - import dashboardjson * for an example:
 ```bash
 {
-  "annotations": {
-    "list": [
+  "dashboard": {
+    "title": "SONiC Switch Monitor",
+    "uid": "sonic-switch-01",
+    "tags": ["sonic", "snmp", "network"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 38,
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "label": "Switch",
+          "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+          "query": "label_values(ifOperStatus, instance)",
+          "refresh": 2,
+          "sort": 1,
+          "current": {}
+        },
+        {
+          "name": "ifName",
+          "type": "query",
+          "label": "Interface",
+          "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+          "query": "label_values(ifOperStatus{instance=\"$instance\", ifName!=\"eth0\"}, ifName)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": "Ethernet.*",
+          "refresh": 2,
+          "sort": 3,
+          "current": {}
+        }
+      ]
+    },
+    "panels": [
       {
-        "builtIn": 1,
-        "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+        "id": 1,
+        "title": "Interface Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 24, "h": 5},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "sort_desc(ifOperStatus{instance=\"$instance\", ifName=~\"Ethernet.*\"})",
+            "legendFormat": "{{ifName}}",
+            "instant": true
+          }
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none",
+          "textMode": "name",
+          "orientation": "auto"
         },
-        "enable": true,
-        "hide": true,
-        "iconColor": "rgba(0, 211, 255, 1)",
-        "name": "Annotations & Alerts",
-        "type": "dashboard"
-      }
-    ]
-  },
-  "editable": true,
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "links": [],
-  "panels": [
-    {
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
               {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 0,
-        "y": 0
-      },
-      "id": 1,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "sum(rate(ifHCInOctets[1m]) * 8)",
-          "refId": "A"
-        }
-      ],
-      "title": "Total Ingress Traffic",
-      "type": "stat"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 6,
-        "y": 0
-      },
-      "id": 2,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "sum(rate(ifHCOutOctets[1m]) * 8)",
-          "refId": "A"
-        }
-      ],
-      "title": "Total Egress Traffic",
-      "type": "stat"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 4
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "rate(ifHCInOctets[1m]) * 8",
-          "legendFormat": "RX {{ifIndex}}",
-          "refId": "A"
-        },
-        {
-          "expr": "rate(ifHCOutOctets[1m]) * 8",
-          "legendFormat": "TX {{ifIndex}}",
-          "refId": "B"
-        }
-      ],
-      "title": "Interface Traffic (Per Port)",
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "showValues": false,
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 12
-      },
-      "id": 4,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "(rate(ifHCInOctets[1m]) * 8) / 100000000000 * 100",
-          "legendFormat": "RX {{ifIndex}}",
-          "refId": "A"
-        },
-        {
-          "expr": "(rate(ifHCOutOctets[1m]) * 8) / 100000000000 * 100",
-          "legendFormat": "TX {{ifIndex}}",
-          "refId": "B"
-        }
-      ],
-      "title": "Interface Utilization (%)",
-      "type": "timeseries"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 20
-      },
-      "id": 5,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "topk(10, rate(ifHCInOctets[1m]) * 8)",
-          "legendFormat": "{{ifIndex}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Top 10 Interfaces (Ingress)",
-      "type": "barchart"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "fillOpacity": 80,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 20
-      },
-      "id": 6,
-      "options": {
-        "barRadius": 0,
-        "barWidth": 0.97,
-        "fullHighlight": false,
-        "groupWidth": 0.7,
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "orientation": "auto",
-        "showValue": "auto",
-        "stacking": "none",
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        },
-        "xTickLabelRotation": 0,
-        "xTickLabelSpacing": 0
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "topk(10, rate(ifHCOutOctets[1m]) * 8)",
-          "legendFormat": "{{ifIndex}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Top 10 Interfaces (Egress)",
-      "type": "barchart"
-    },
-    {
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [
-            {
-              "options": {
-                "1": {
-                  "color": "green",
-                  "text": "UP"
-                },
-                "2": {
-                  "color": "red",
-                  "text": "DOWN"
+                "type": "value",
+                "options": {
+                  "1": {"text": "UP", "color": "green", "index": 0},
+                  "2": {"text": "DOWN", "color": "red", "index": 1}
                 }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+              }
+            ],
+            "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "CPU Usage %",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 5, "w": 8, "h": 7},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "100 - ucdCpuIdle{instance=\"$instance\"}", "legendFormat": "Total"},
+          {"expr": "ucdCpuUser{instance=\"$instance\"}", "legendFormat": "User"},
+          {"expr": "ucdCpuSystem{instance=\"$instance\"}", "legendFormat": "System"},
+          {"expr": "ucdCpuIoWait{instance=\"$instance\"}", "legendFormat": "IoWait"}
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent", "min": 0, "max": 100,
+            "custom": {"lineWidth": 1, "fillOpacity": 10},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 80},
+              {"color": "red", "value": 90}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Memory Usage %",
+        "type": "timeseries",
+        "gridPos": {"x": 8, "y": 5, "w": 8, "h": 7},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "(1 - ucdMemAvailReal{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"}) * 100",
+            "legendFormat": "Used %"
+          },
+          {
+            "expr": "ucdMemBuffer{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"} * 100",
+            "legendFormat": "Buffer %"
+          },
+          {
+            "expr": "ucdMemCached{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"} * 100",
+            "legendFormat": "Cached %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent", "min": 0, "max": 100,
+            "custom": {"lineWidth": 1, "fillOpacity": 10},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 75},
+              {"color": "red", "value": 85}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Temperature Sensors (C)",
+        "type": "timeseries",
+        "gridPos": {"x": 16, "y": 5, "w": 8, "h": 7},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "lmTempSensorsValue{instance=\"$instance\"} / 1000",
+            "legendFormat": "Sensor {{lmTempSensorsIndex}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "celsius",
+            "custom": {"lineWidth": 1, "fillOpacity": 10},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 75},
+              {"color": "red", "value": 85}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "PSU Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "psu1PowerStatus{instance=\"$instance\"}", "legendFormat": "PSU 1", "instant": true},
+          {"expr": "psu2PowerStatus{instance=\"$instance\"}", "legendFormat": "PSU 2", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
               {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
+                "type": "value",
+                "options": {
+                  "1": {"text": "Normal", "color": "green", "index": 0},
+                  "2": {"text": "Warning", "color": "orange", "index": 1},
+                  "3": {"text": "Critical", "color": "red", "index": 2},
+                  "4": {"text": "Shutdown", "color": "red", "index": 3},
+                  "5": {"text": "Not Present", "color": "grey", "index": 4},
+                  "6": {"text": "Not Functioning", "color": "red", "index": 5}
+                }
               }
             ]
           }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 24,
-        "x": 0,
-        "y": 28
-      },
-      "id": 7,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.4.1",
-      "targets": [
-        {
-          "expr": "ifOperStatus",
-          "refId": "A"
         }
-      ],
-      "title": "Interface Status",
-      "type": "stat"
-    }
-  ],
-  "preload": false,
-  "refresh": "",
-  "schemaVersion": 42,
-  "tags": [],
-  "templating": {
-    "list": []
+      },
+      {
+        "id": 6,
+        "title": "Fan Status",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "fan1Status{instance=\"$instance\"}", "legendFormat": "Fan 1", "instant": true},
+          {"expr": "psu1FanStatus{instance=\"$instance\"}", "legendFormat": "PSU1 Fan", "instant": true},
+          {"expr": "psu2FanStatus{instance=\"$instance\"}", "legendFormat": "PSU2 Fan", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "1": {"text": "OK", "color": "green", "index": 0},
+                  "2": {"text": "Unavailable", "color": "orange", "index": 1},
+                  "3": {"text": "Failed", "color": "red", "index": 2}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Fan Speed (RPM)",
+        "type": "bargauge",
+        "gridPos": {"x": 12, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "fan1Rpm{instance=\"$instance\"}", "legendFormat": "Fan 1", "instant": true},
+          {"expr": "psu1FanRpm{instance=\"$instance\"}", "legendFormat": "PSU1 Fan", "instant": true},
+          {"expr": "psu2FanRpm{instance=\"$instance\"}", "legendFormat": "PSU2 Fan", "instant": true},
+          {"expr": "lmFanSensorsValue{instance=\"$instance\"}", "legendFormat": "Sensor {{lmFanSensorsIndex}}", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "orientation": "horizontal",
+          "displayMode": "gradient"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "rotrpm",
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "red", "value": 0}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "PSU Voltage & Temp",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "psu1Temp{instance=\"$instance\"} / 1000", "legendFormat": "PSU1 Temp C", "instant": true},
+          {"expr": "psu2Temp{instance=\"$instance\"} / 1000", "legendFormat": "PSU2 Temp C", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "value",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {"unit": "celsius"}
+        }
+      },
+      {
+        "id": 9,
+        "title": "OSPF Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 16, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "ospfAdminStat{instance=\"$instance\"}", "legendFormat": "OSPF Admin", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "1": {"text": "Enabled", "color": "green", "index": 0},
+                  "2": {"text": "Disabled", "color": "red", "index": 1}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Interface RX Traffic (bps)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCInOctets{instance=\"$instance\", ifName=~\"$ifName\"}[5m]) * 8",
+            "legendFormat": "{{ifName}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        },
+        "options": {"tooltip": {"mode": "multi", "sort": "desc"}}
+      },
+      {
+        "id": 11,
+        "title": "Interface TX Traffic (bps)",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 20, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCOutOctets{instance=\"$instance\", ifName=~\"$ifName\"}[5m]) * 8",
+            "legendFormat": "{{ifName}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        },
+        "options": {"tooltip": {"mode": "multi", "sort": "desc"}}
+      },
+      {
+        "id": 12,
+        "title": "Interface RX Packets/s",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 28, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCInUcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Ucast"
+          },
+          {
+            "expr": "rate(ifHCInMulticastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Mcast"
+          },
+          {
+            "expr": "rate(ifHCInBroadcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Bcast"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "pps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        }
+      },
+      {
+        "id": 13,
+        "title": "Interface TX Packets/s",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 28, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCOutUcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Ucast"
+          },
+          {
+            "expr": "rate(ifHCOutMulticastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Mcast"
+          },
+          {
+            "expr": "rate(ifHCOutBroadcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Bcast"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "pps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        }
+      }
+    ]
   },
-  "time": {
-    "from": "now-6h",
-    "to": "now"
-  },
-  "timepicker": {},
-  "timezone": "browser",
-  "title": "SONiC Interface Monitoring (100G)",
-  "uid": "adsmqhv",
-  "version": 1,
-  "weekStart": ""
+  "folderId": 0,
+  "overwrite": true
 }
 ```
 ---
-<img width="1575" height="801" alt="image" src="https://github.com/user-attachments/assets/5662b95e-a3f4-45b6-9b80-131e2b9ef6fb" />
+<img width="1575" height="868" alt="image" src="https://github.com/user-attachments/assets/0bc4cd4b-07b8-497e-8219-c6be9089a53d" />
 
 - This is just a demo for dashboard
 
