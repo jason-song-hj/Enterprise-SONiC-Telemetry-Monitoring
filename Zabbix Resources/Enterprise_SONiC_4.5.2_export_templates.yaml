@@ -6,7 +6,7 @@ zabbix_export:
   templates:
     - uuid: af66af78fc5042c5843d2b9214e136f1
       template: 'SONiC Switch M2-W6510-32C'
-      name: 'Micas SONiC Switch M2-W6510-32C'
+      name: 'SONiC Switch M2-W6510-32C'
       description: |
         Custom template for SONiC 4.x 32x100G switch (M2-W6510-32C)
         Monitors: CPU, Memory, Temperature, Fan, Port Status, Optical DDM, Docker
@@ -2232,6 +2232,76 @@ zabbix_export:
           delay: 60s
           history: 30d
           value_type: FLOAT
+        - uuid: c85d7256ee854370a26ed34750bebb5a
+          name: 'SNMP Trap: Auth Failure'
+          type: SNMP_TRAP
+          key: 'snmptrap[authFailure]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 7c44aa9d6fc54d659829e796f40a2a28
+          name: 'SNMP Trap: BGP Backward Transition'
+          type: SNMP_TRAP
+          key: 'snmptrap[bgpBackwardTrans]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 35a860046027412d9cfab84853bba717
+          name: 'SNMP Trap: BGP Established'
+          type: SNMP_TRAP
+          key: 'snmptrap[bgpEstablished]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 749b9223fdf54967b84244737fe34e7f
+          name: 'SNMP Trap: Cold Start'
+          type: SNMP_TRAP
+          key: 'snmptrap[coldStart]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: d3b38aa350d54a7aa7d4df4cbac06cc6
+          name: 'SNMP Trap: Config Changed'
+          type: SNMP_TRAP
+          key: 'snmptrap[configChange]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 8123a6a84fa84e6fa53adacbdfaf5779
+          name: 'SNMP Trap: Link Down'
+          type: SNMP_TRAP
+          key: 'snmptrap[linkDown]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 1a7065e973d2426a908eda9af32ff87c
+          name: 'SNMP Trap: Link Up'
+          type: SNMP_TRAP
+          key: 'snmptrap[linkUp]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 78d542522ff84c84a4490e958539dfde
+          name: 'SNMP Trap: OSPF Interface State Change'
+          type: SNMP_TRAP
+          key: 'snmptrap[ospfIfStateChange]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 852ebb72e8854fb0a0120abf19fea73a
+          name: 'SNMP Trap: OSPF Neighbor State Change'
+          type: SNMP_TRAP
+          key: 'snmptrap[ospfNbrStateChange]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
+        - uuid: 53b76155031d4606aacf20be96d586b3
+          name: 'SNMP Trap: Warm Start'
+          type: SNMP_TRAP
+          key: 'snmptrap[warmStart]'
+          history: 30d
+          value_type: LOG
+          logtimefmt: 'yyyy-MM-ddThh:mm:ssZZZZZ'
         - uuid: 4d8e77aa07e6442aabe4467dddb44531
           name: 'System description'
           type: SNMP_AGENT
@@ -2274,9 +2344,9 @@ zabbix_export:
           value_type: FLOAT
           units: uptime
         - uuid: 5b4057a4200b4559a2ae4a085d0c78fc
-          name: 'ARP Table Entries'
+          name: 'ARP/Neighbor Table Entries'
           type: SNMP_AGENT
-          snmp_oid: 'walk[1.3.6.1.2.1.4.22]'
+          snmp_oid: 'walk[1.3.6.1.2.1.4.35.1.4]'
           key: table.arp.count
           delay: 5m
           history: 30d
