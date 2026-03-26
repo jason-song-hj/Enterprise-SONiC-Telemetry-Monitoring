@@ -65,16 +65,6 @@ SONiC Switch
 
 ## DEMO & Results
 
-
- #### On  test SNMP-exporter ####
-
-
-
-
----
-
-
-
 ## 1️⃣ Micas W6510-32C Switch m65_1$ SONiC Switch — Enable SNMP
 
 ```bash
@@ -98,7 +88,7 @@ m65_1$ vi snmp.yml
 
 Paste the following config:
 
-## snmp.yml
+### snmp.yml
 
 <!-- SNMP_YML_START -->
 <!-- SNMP_YML_END -->
