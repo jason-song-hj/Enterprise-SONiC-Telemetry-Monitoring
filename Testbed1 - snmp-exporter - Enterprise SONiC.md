@@ -823,7 +823,7 @@ curl -X POST \
   http://<GRAFANA_IP>:3000/api/dashboards/db \
   -d @dashboard.json
 ```
-Download Dashboard [Dashboard](fff)
+Download Dashboard [Dashboard](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring/blob/main/Prometheus%20Resources/dashboard.json)
 
 <img width="1575" height="868" alt="image" src="https://github.com/user-attachments/assets/0bc4cd4b-07b8-497e-8219-c6be9089a53d" />
 
