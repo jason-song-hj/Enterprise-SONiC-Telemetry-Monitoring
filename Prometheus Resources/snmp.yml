@@ -1,6 +1,3 @@
-#### This is for snmp yml file on SONiC 4.5 ####
-
-
 auths:
   public_v2:
     version: 2
