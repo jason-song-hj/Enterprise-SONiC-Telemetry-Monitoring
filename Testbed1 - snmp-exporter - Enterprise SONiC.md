@@ -104,8 +104,8 @@ modules:
   # ============================================================
   sonic_if:
     walk:
-      - 1.3.6.1.2.1.2.2      # ifTable (ifOperStatus 等)
-      - 1.3.6.1.2.1.31.1.1   # ifXTable (ifName, ifHCInOctets 等)
+      - 1.3.6.1.2.1.2.2      # ifTable (ifOperStatus etc)
+      - 1.3.6.1.2.1.31.1.1   # ifXTable (ifName, ifHCInOctets etc)
     metrics:
       - name: ifName
         oid: 1.3.6.1.2.1.31.1.1.1.1
@@ -320,9 +320,9 @@ modules:
       - 1.3.6.1.4.1.2021.13.16.2  # lmTempSensorsTable
       - 1.3.6.1.4.1.2021.13.16.3  # lmFanSensorsTable
       - 1.3.6.1.4.1.2021.13.16.4  # lmVoltSensorsTable
-      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue (温度/PSU/DDM)
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue (Temp/PSU/DDM)
     metrics:
-      # UCD lmSensors 温度
+      # UCD lmSensors Temp
       - name: lmTempSensorsValue
         oid: 1.3.6.1.4.1.2021.13.16.2.1.3
         type: gauge
@@ -331,7 +331,7 @@ modules:
           - labelname: lmTempSensorsIndex
             type: gauge
 
-      # UCD lmSensors 风扇
+      # UCD lmSensors FANs
       - name: lmFanSensorsValue
         oid: 1.3.6.1.4.1.2021.13.16.3.1.3
         type: gauge
@@ -340,7 +340,7 @@ modules:
           - labelname: lmFanSensorsIndex
             type: gauge
 
-      # UCD lmSensors 电压
+      # UCD lmSensors Volt
       - name: lmVoltSensorsValue
         oid: 1.3.6.1.4.1.2021.13.16.4.1.3
         type: gauge
@@ -349,7 +349,7 @@ modules:
           - labelname: lmVoltSensorsIndex
             type: gauge
 
-      # Entity Sensor - 温度传感器 (index 200990110~200990710)
+      # Entity Sensor - Temp (index 200990110~200990710)
       - name: entPhySensorValue
         oid: 1.3.6.1.2.1.99.1.1.1.4
         type: gauge
@@ -358,7 +358,7 @@ modules:
           - labelname: entPhySensorIndex
             type: gauge
 
-      # Entity Sensor - 状态
+      # Entity Sensor - Stats
       - name: entPhySensorOperStatus
         oid: 1.3.6.1.2.1.99.1.1.1.5
         type: gauge
@@ -372,82 +372,82 @@ modules:
   # ============================================================
   sonic_hardware:
     walk:
-      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue / Status (所有硬件传感器)
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue / Status (All Hardware)
       - 1.3.6.1.4.1.9.9.117.1.1.2 # Cisco PSU power status MIB
     metrics:
-      # FAN 1 转速
+      # FAN 1 Rpm
       - name: fan1Rpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.499019920
         type: gauge
         help: Fan 1 speed (RPM)
 
-      # FAN 1 状态
+      # FAN 1 Stats
       - name: fan1Status
         oid: 1.3.6.1.2.1.99.1.1.1.5.499019920
         type: gauge
         help: "Fan 1 status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # FAN 2 转速
+      # FAN 2 Rpm
       - name: fan2Rpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
         type: gauge
         help: Fan 2 speed (RPM)
 
-      # FAN 2 状态
+      # FAN 2 stats
       - name: fan2Status
         oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
         type: gauge
         help: "Fan 2 status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # PSU 1 风扇转速
+      # PSU 1 PSU_Fans Rpm
       - name: psu1FanRpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.601019920
         type: gauge
         help: PSU 1 fan speed (RPM)
 
-      # PSU 1 风扇状态
+      # PSU 1 PSU_Fans Rpm
       - name: psu1FanStatus
         oid: 1.3.6.1.2.1.99.1.1.1.5.601019920
         type: gauge
         help: "PSU 1 fan status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # PSU 1 电源状态 (Cisco MIB)
+      # PSU 1 Power Status (Cisco MIB)
       - name: psu1PowerStatus
         oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.1
         type: gauge
         help: "PSU 1 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
 
-      # PSU 1 温度
+      # PSU 1 Temp
       - name: psu1Temp
         oid: 1.3.6.1.2.1.99.1.1.1.4.601240010
         type: gauge
         help: PSU 1 temperature (raw, divide by 1000 for C)
 
-      # PSU 1 电压
+      # PSU 1 Volt
       - name: psu1Voltage
         oid: 1.3.6.1.2.1.99.1.1.1.4.601240050
         type: gauge
         help: PSU 1 voltage (raw, divide by 1000 for V)
 
-      # PSU 2 风扇转速
+      # PSU 2 PSU_Rpm
       - name: psu2FanRpm
         oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
         type: gauge
         help: PSU 2 fan speed (RPM)
 
-      # PSU 2 风扇状态
+      # PSU 2 PSU_Rpm
       - name: psu2FanStatus
         oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
         type: gauge
         help: "PSU 2 fan status: 1=ok, 2=unavailable, 3=nonoperational"
 
-      # PSU 2 电源状态
+      # PSU 2 PSU_Stats
       - name: psu2PowerStatus
         oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.2
         type: gauge
         help: "PSU 2 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
 
-      # PSU 2 温度
+      # PSU 2 TEMP
       - name: psu2Temp
         oid: 1.3.6.1.2.1.99.1.1.1.4.602240010
         type: gauge
@@ -464,13 +464,13 @@ modules:
   # ============================================================
   sonic_ddm:
     walk:
-      - 1.3.6.1.2.1.99.1.1.1.4    # entPhySensorValue (含所有DDM实例)
+      - 1.3.6.1.2.1.99.1.1.1.4    # entPhySensorValue 
       - 1.3.6.1.2.1.99.1.1.1.5    # entPhySensorOperStatus
     metrics:
       - name: ddmSensorValue
         oid: 1.3.6.1.2.1.99.1.1.1.4
         type: gauge
-        help: DDM sensor raw value (TxPower/RxPower/Bias/Temp，需按index换算单位)
+        help: DDM sensor raw value (TxPower/RxPower/Bias/Temp)
         indexes:
           - labelname: ddmSensorIndex
             type: gauge
