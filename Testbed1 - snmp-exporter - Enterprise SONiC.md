@@ -88,7 +88,7 @@ m65_1$ vi snmp.yml
 
 Paste the following config:
 
-### snmp.yml
+
 
 <!-- SNMP_YML_START -->
 ```yaml
