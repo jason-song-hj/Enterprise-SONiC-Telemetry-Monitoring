@@ -1,0 +1,68 @@
+name: Sync config files into Testbed1
+
+on:
+  push:
+    paths:
+      - 'Prometheus Resources/snmp.yml'
+      - 'Prometheus Resources/scrape_configs.yml'
+      - 'Prometheus Resources/dashboard.json'
+      - 'Zabbix Resources/README.md'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject snmp.yml into README
+        run: |
+          CONTENT=$(cat "Prometheus Resources/snmp.yml")
+          BLOCK="\`\`\`yaml\n${CONTENT}\n\`\`\`"
+          python3 -c "
+          import re, sys
+          readme = open('Zabbix Resources/README.md').read()
+          new = re.sub(
+            r'<!-- SNMP_YML_START -->.*?<!-- SNMP_YML_END -->',
+            '<!-- SNMP_YML_START -->\n${BLOCK}\n<!-- SNMP_YML_END -->',
+            readme, flags=re.DOTALL
+          )
+          open('Zabbix Resources/README.md', 'w').write(new)
+          "
+
+      - name: Inject scrape_configs.yml into README
+        run: |
+          python3 - <<'EOF'
+          import re
+          content = open('Prometheus Resources/scrape_configs.yml').read()
+          block = f"<!-- PROMETHEUS_YML_START -->\n```yaml\n{content}\n```\n<!-- PROMETHEUS_YML_END -->"
+          readme = open('Zabbix Resources/README.md').read()
+          new = re.sub(
+            r'<!-- PROMETHEUS_YML_START -->.*?<!-- PROMETHEUS_YML_END -->',
+            block, readme, flags=re.DOTALL
+          )
+          open('Zabbix Resources/README.md', 'w').write(new)
+          EOF
+
+      - name: Inject rules.yml into README
+        run: |
+          python3 - <<'EOF'
+          import re
+          content = open('Prometheus Resources/rules.yml').read()
+          block = f"<!-- RULES_YML_START -->\n```yaml\n{content}\n```\n<!-- RULES_YML_END -->"
+          readme = open('Zabbix Resources/README.md').read()
+          new = re.sub(
+            r'<!-- RULES_YML_START -->.*?<!-- RULES_YML_END -->',
+            block, readme, flags=re.DOTALL
+          )
+          open('Zabbix Resources/README.md', 'w').write(new)
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "Zabbix Resources/README.md"
+          git diff --staged --quiet || git commit -m "chore: sync config files into README"
+          git push
