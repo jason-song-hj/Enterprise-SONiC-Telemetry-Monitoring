@@ -1,16 +1,75 @@
-#### Config SNMP Trap on Ent_SONiC ####
+<p align="center">
+  <i>Enterprise SONiC SNMP Trap → Zabbix Integration</i>
+</p>
 
-snmp-server host 100.105.8.x trap 
+<p align="center">
+  Built by <b>Jason S</b>
+</p>
 
-show snmp-server host 
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=yZ-0n-A-ZsM">
+    <img src="https://img.shields.io/badge/▶ Watch Demo-YouTube-red?style=for-the-badge&logo=youtube"/>
+  </a>
+</p>
 
+---
 
-#### Docker-Compose file ####
+<p align="center">
+  <b>Receive SONiC SNMP Traps and display in Zabbix Dashboard</b>
+</p>
+
+---
+
+## 🏗️ Architecture
+
+```
+SONiC Switch
+  └── SNMP Trap (UDP 162)
+        └──► Zabbix host machine :1162 (via iptables redirect)
+                └── zabbix-snmptraps (Docker) → ./snmptraps/snmptraps.log
+                        └──► zabbix-server (Docker, read-only volume)
+                                └──► Dashboard
+```
+
+---
+
+## 1️⃣ SONiC Switch — SNMP Trap Configuration
+
 ```bash
+sonic# configure
+sonic(config)# snmp-server host <ZABBIX_HOST_IP> trap version 2c public
+sonic(config)# exit
+
+# Verify
+sonic# show snmp-server host
+```
+
+---
+
+## 2️⃣ Zabbix Server — SNMP Trap Configuration
+
+### 2.1 iptables — Redirect UDP 162 → 1162
+
+The `zabbix-snmptraps` container listens on port **1162** internally. Redirect incoming traps from the standard port 162:
+
+```bash
+sudo iptables -t nat -A PREROUTING -p udp --dport 162 -j REDIRECT --to-port 1162
+```
+
+### 2.2 Create snmptraps folder
+
+```bash
+cd <your_datahub_folder>
+mkdir -p snmptraps
+```
+
+> ⚠️ The `snmptraps` folder must be in the same directory as your `docker-compose.yml`
+
+### 2.3 docker-compose.yml
+
+```yaml
 version: "3.8"
-
 services:
-
   zabbix-server:
     image: zabbix/zabbix-server-pgsql:latest
     container_name: zabbix-server
@@ -61,14 +120,12 @@ services:
       - ./zabbix-db:/var/lib/postgresql/data
     networks:
       - datahub-net
-      
+
   zabbix-snmptraps:
     image: zabbix/zabbix-snmptraps:latest
     container_name: zabbix-snmptraps
     restart: always
     network_mode: "host"
-    ports: 
-      - "162:1162/udp"
     volumes:
       - ./snmptraps:/var/lib/zabbix/snmptraps
 
@@ -79,38 +136,111 @@ networks:
       config:
         - subnet: 10.30.0.0/16
 ```
-You can change the way that your docker-compose yml file as you like     
 
-#### Make new folder ####
-cd your_target_foder
-mkdir -p snmptraps //keep same docker-composepwd
+> You can customize the `docker-compose.yml` to fit your environment
 
-#### Tranfer Iptables 162 -> 1162 ####
-sudo iptables -t nat -A PREROUTING -p udp --dport 162 -j REDIRECT --to-port 1162
+```bash
+docker compose up -d
 
-#### Test on Rk3588 ####
-tail -f ~/datahub/snmptraps/snmptraps.log 
-
-#### Simulate a trap on SONiC ####
-docker snmp restart
-
-you will see a new item appears at Zabbix Server
-<br>
-<img width="598" height="65" alt="image" src="https://github.com/user-attachments/assets/16a297eb-7a52-4991-aa83-f562d402ee93" />
-
-#### Go to your Zabbix Server Dashboard ####
-Check Monitoring - latest data to see trap
-<img width="1903" height="866" alt="image" src="https://github.com/user-attachments/assets/e6c83806-d91a-4e9e-a842-8760eaa5b48f" />
+# Verify
+docker ps | grep zabbix
+```
 
 ---
 
-Dashboard - add wid - item history - you can add the items trap that you want.
-<img width="1012" height="459" alt="image" src="https://github.com/user-attachments/assets/4eb2a322-f621-44b9-9bd7-6ba3ee0a009a" />
+## 3️⃣ Zabbix UI Configuration
+
+### 3.1 Configure Host SNMP Interface
+
+`Data collection → Hosts → <your host> → Interfaces`
+
+Add an **SNMP** interface with the SONiC switch IP address.
+
+### 3.2 Create SNMP Trap Item
+
+`Data collection → Hosts → <hostname> → Items → Create item`
+
+| Field | Value |
+|-------|-------|
+| Name | `SNMP Trap` |
+| Type | `SNMP trap` |
+| Key | `snmptrap.fallback` |
+| Type of information | `Log` |
 
 ---
 
-Finnally My Dashboard
-<img width="1883" height="664" alt="image" src="https://github.com/user-attachments/assets/40542070-c96f-4e5c-b9d2-0e82273c3ee6" />
+## 4️⃣ Test & Verify
+
+### Simulate a trap on SONiC
+
+```bash
+# Restart SNMP service on SONiC to trigger a Cold Start trap
+admin$ docker snmp restart
+```
+
+### Watch the trap log on host machine
+
+```bash
+Zabbix$ tail -f ~/datahub/snmptraps/snmptraps.log
+```
+
+A new entry should appear:
+
+<img width="598" height="65" alt="snmptraps log" src="https://github.com/user-attachments/assets/16a297eb-7a52-4991-aa83-f562d402ee93" />
+
+---
+
+## 5️⃣ Dashboard Setup
+
+### Check Latest Data
+
+`Monitoring → Latest data` — filter by host to see incoming traps:
+
+<img width="1903" height="866" alt="Latest Data" src="https://github.com/user-attachments/assets/e6c83806-d91a-4e9e-a842-8760eaa5b48f" />
+
+---
+
+### Add History Widget to Dashboard
+
+`Monitoring → Dashboard → Edit dashboard → Add widget → History`
+
+Select the trap items you want to display:
+
+<img width="1012" height="459" alt="Add Widget" src="https://github.com/user-attachments/assets/4eb2a322-f621-44b9-9bd7-6ba3ee0a009a" />
+
+---
+
+### Final Dashboard
+
+<img width="1883" height="664" alt="Dashboard" src="https://github.com/user-attachments/assets/40542070-c96f-4e5c-b9d2-0e82273c3ee6" />
+
+---
+
+## 🔍 Troubleshooting
+
+```bash
+# Watch trap log in real time
+tail -f <your_datahub_folder>/snmptraps/snmptraps.log
+
+# Check zabbix-snmptraps container logs
+docker logs zabbix-snmptraps | tail -30
+
+# Verify iptables redirect is active
+sudo iptables -t nat -L PREROUTING -n | grep 162
+
+# Capture packets to verify SONiC is sending traps
+tcpdump -i any udp port 162 -n
+```
+
+---
+
+## 📝 Notes
+
+- `zabbix-snmptraps` uses `network_mode: "host"` — do **not** add a `ports:` section alongside it
+- The `snmptraps` volume is mounted **read-only** (`ro`) in `zabbix-server` and **read-write** in `zabbix-snmptraps`
+- Use `snmptrap.fallback` as the item key to catch all incoming traps; use `snmptrap[<regex>]` to filter specific trap types
+- Trap messages include OID, source IP, and trap content — useful for building triggers based on specific events
+
 
 
 
