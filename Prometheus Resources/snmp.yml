@@ -6,7 +6,7 @@ auths:
 modules:
 
   # ============================================================
-  # Module 1: 接口流量 & 状态（已有基础上完善）
+  # Module 1: Interface Traffic & Status
   # ============================================================
   sonic_if:
     walk:
@@ -139,7 +139,7 @@ modules:
             type: DisplayString
 
   # ============================================================
-  # Module 2: CPU & 内存（UCD-SNMP MIB）
+  # Module 2: CPU & Memory (UCD-SNMP MIB)
   # ============================================================
   sonic_system:
     walk:
@@ -219,7 +219,7 @@ modules:
         help: System uptime in hundredths of a second
 
   # ============================================================
-  # Module 3: 温度传感器（UCD lmSensors + Entity Sensor MIB）
+  # Module 3: Temperature Sensors (UCD lmSensors + Entity Sensor MIB)
   # ============================================================
   sonic_sensors:
     walk:
@@ -274,22 +274,149 @@ modules:
             type: gauge
 
   # ============================================================
-  # Module 4: BGP & OSPF 路由协议
+  # Module 4: PSU / FAN / Hardware Status (Entity Sensor MIB)
   # ============================================================
+  sonic_hardware:
+    walk:
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue / Status (所有硬件传感器)
+      - 1.3.6.1.4.1.9.9.117.1.1.2 # Cisco PSU power status MIB
+    metrics:
+      # FAN 1 转速
+      - name: fan1Rpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.499019920
+        type: gauge
+        help: Fan 1 speed (RPM)
+
+      # FAN 1 状态
+      - name: fan1Status
+        oid: 1.3.6.1.2.1.99.1.1.1.5.499019920
+        type: gauge
+        help: "Fan 1 status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # FAN 2 转速
+      - name: fan2Rpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
+        type: gauge
+        help: Fan 2 speed (RPM)
+
+      # FAN 2 状态
+      - name: fan2Status
+        oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
+        type: gauge
+        help: "Fan 2 status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # PSU 1 风扇转速
+      - name: psu1FanRpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.601019920
+        type: gauge
+        help: PSU 1 fan speed (RPM)
+
+      # PSU 1 风扇状态
+      - name: psu1FanStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5.601019920
+        type: gauge
+        help: "PSU 1 fan status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # PSU 1 电源状态 (Cisco MIB)
+      - name: psu1PowerStatus
+        oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.1
+        type: gauge
+        help: "PSU 1 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
+
+      # PSU 1 温度
+      - name: psu1Temp
+        oid: 1.3.6.1.2.1.99.1.1.1.4.601240010
+        type: gauge
+        help: PSU 1 temperature (raw, divide by 1000 for C)
+
+      # PSU 1 电压
+      - name: psu1Voltage
+        oid: 1.3.6.1.2.1.99.1.1.1.4.601240050
+        type: gauge
+        help: PSU 1 voltage (raw, divide by 1000 for V)
+
+      # PSU 2 风扇转速
+      - name: psu2FanRpm
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602019920
+        type: gauge
+        help: PSU 2 fan speed (RPM)
+
+      # PSU 2 风扇状态
+      - name: psu2FanStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5.602019920
+        type: gauge
+        help: "PSU 2 fan status: 1=ok, 2=unavailable, 3=nonoperational"
+
+      # PSU 2 电源状态
+      - name: psu2PowerStatus
+        oid: 1.3.6.1.4.1.9.9.117.1.1.2.1.2.2
+        type: gauge
+        help: "PSU 2 power status: 1=normal, 2=warning, 3=critical, 4=shutdown, 5=notPresent, 6=notFunctioning"
+
+      # PSU 2 温度
+      - name: psu2Temp
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602240010
+        type: gauge
+        help: PSU 2 temperature (raw, divide by 1000 for C)
+
+      # PSU 2 电压
+      - name: psu2Voltage
+        oid: 1.3.6.1.2.1.99.1.1.1.4.602240050
+        type: gauge
+        help: PSU 2 voltage (raw, divide by 1000 for V)
+
+  # ============================================================
+  # Module 5: DDM Optical Transceivers (Entity Sensor MIB, full tree walk)
+  # ============================================================
+  sonic_ddm:
+    walk:
+      - 1.3.6.1.2.1.99.1.1.1.4    # entPhySensorValue (含所有DDM实例)
+      - 1.3.6.1.2.1.99.1.1.1.5    # entPhySensorOperStatus
+    metrics:
+      - name: ddmSensorValue
+        oid: 1.3.6.1.2.1.99.1.1.1.4
+        type: gauge
+        help: DDM sensor raw value (TxPower/RxPower/Bias/Temp，需按index换算单位)
+        indexes:
+          - labelname: ddmSensorIndex
+            type: gauge
+
+      - name: ddmSensorStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5
+        type: gauge
+        help: "DDM sensor status: 1=ok, 2=unavailable, 3=nonoperational"
+        indexes:
+          - labelname: ddmSensorIndex
+            type: gauge
+
+  # ============================================================
+  # Module 6: Table Counters (ARP / MAC / VLAN / Routes)
+  # ============================================================
+  sonic_tables:
+    walk:
+      - 1.3.6.1.2.1.4.22.1.2
+      - 1.3.6.1.2.1.4.24.2
+      - 1.3.6.1.2.1.4.34
+      - 1.3.6.1.2.1.17.7.1.2.2
+      - 1.3.6.1.2.1.17.7.1.1.4
+      - 1.3.6.1.4.1.4413.1.2.2.1.1.1.1
+
   sonic_routing:
     walk:
-      - 1.3.6.1.2.1.15    # BGP4-MIB
-      - 1.3.6.1.2.1.14.1  # OSPF general group
+      - 1.3.6.1.2.1.15.2.0    # bgpLocalAs
+      - 1.3.6.1.2.1.15.3      # bgpPeerTable
+      - 1.3.6.1.2.1.14.1.1.0  # ospfRouterId
+      - 1.3.6.1.2.1.14.1.2.0  # ospfAdminStat
     metrics:
       - name: bgpLocalAs
         oid: 1.3.6.1.2.1.15.2.0
         type: gauge
-        help: BGP local autonomous system number
+        help: BGP local AS number
 
       - name: bgpPeerState
         oid: 1.3.6.1.2.1.15.3.1.2
         type: gauge
-        help: "BGP peer FSM state: 1=idle,2=connect,3=active,4=opensent,5=openconfirm,6=established"
+        help: "BGP peer state: 1=idle,2=connect,3=active,4=opensent,5=openconfirm,6=established"
         indexes:
           - labelname: bgpPeerRemoteAddr
             type: InetAddressIPv4
