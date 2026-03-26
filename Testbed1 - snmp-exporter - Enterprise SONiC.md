@@ -481,123 +481,8 @@ Performance CPU 0.00%, MEM 0.6% so it was not very occupied and just little reso
 
 Location: `/etc/prometheus/prometheus.yml` (or your mounted path)
 
-```yaml
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
-
-rule_files:
-  - /etc/prometheus/rules.yml
-
-scrape_configs:
-  - job_name: sonic_interfaces
-    static_configs:
-      - targets:
-          - <SWITCH_IP>
-    metrics_path: /snmp
-    params:
-      module: [sonic_if]
-      auth: [public_v2]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-
-  - job_name: sonic_system
-    static_configs:
-      - targets: [<SWITCH_IP>]
-    metrics_path: /snmp
-    params:
-      module: [sonic_system]
-      auth: [public_v2]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-
-  - job_name: sonic_sensors
-    static_configs:
-      - targets: [<SWITCH_IP>]
-    metrics_path: /snmp
-    params:
-      module: [sonic_sensors]
-      auth: [public_v2]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-
-  - job_name: sonic_hardware
-    static_configs:
-      - targets: [<SWITCH_IP>]
-    metrics_path: /snmp
-    params:
-      module: [sonic_hardware]
-      auth: [public_v2]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-
-  - job_name: sonic_ddm
-    static_configs:
-      - targets: [<SWITCH_IP>]
-    metrics_path: /snmp
-    params:
-      module: [sonic_ddm]
-      auth: [public_v2]
-    scrape_interval: 60s
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-
-  - job_name: sonic_tables
-    static_configs:
-      - targets: [<SWITCH_IP>]
-    metrics_path: /snmp
-    params:
-      module: [sonic_tables]
-      auth: [public_v2]
-    scrape_interval: 60s
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-
-  - job_name: sonic_routing
-    static_configs:
-      - targets: [<SWITCH_IP>]
-    metrics_path: /snmp
-    params:
-      module: [sonic_routing]
-      auth: [public_v2]
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: <SWITCH_IP>:9116
-```
+<!-- PROMETHEUS_YML_START -->
+<!-- PROMETHEUS_YML_END -->
 
 > ⚠️ Replace `<SWITCH_IP>` with your actual switch IP (e.g. `100.105.8.4`)
 
@@ -605,83 +490,8 @@ scrape_configs:
 
 Location: `/etc/prometheus/rules.yml`
 
-```yaml
-groups:
-  - name: sonic_table_counts
-    interval: 60s
-    rules:
-      - record: sonic_arp_count
-        expr: count(ipNetToPhysicalType{instance="<SWITCH_IP>"})
-      # sonic_mac_count: uncomment when MAC table data is available
-      # sonic_vlan_count: uncomment when VLAN data is available
-      # sonic_ipv4_route_count: uncomment when route table data is available
-
-  - name: sonic_alerts
-    rules:
-      - alert: InterfaceDown
-        expr: ifOperStatus{instance="<SWITCH_IP>", ifName!="eth0"} == 2
-        for: 2m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Interface {{ $labels.ifName }} is down"
-
-      - alert: CPUHigh
-        expr: (100 - ucdCpuIdle{instance="<SWITCH_IP>"}) > 90
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "CPU usage above 90%: {{ $value }}%"
-
-      - alert: MemoryHigh
-        expr: (1 - ucdMemAvailReal{instance="<SWITCH_IP>"} / ucdMemTotalReal{instance="<SWITCH_IP>"}) * 100 > 85
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Memory usage above 85%: {{ $value }}%"
-
-      - alert: PSUDown
-        expr: psu1PowerStatus{instance="<SWITCH_IP>"} != 1 or psu2PowerStatus{instance="<SWITCH_IP>"} != 1
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: "PSU power status abnormal"
-
-      - alert: BGPPeerDown
-        expr: bgpPeerState{instance="<SWITCH_IP>"} != 6
-        for: 2m
-        labels:
-          severity: critical
-        annotations:
-          summary: "BGP peer {{ $labels.bgpPeerRemoteAddr }} not in established state"
-
-      - alert: TempHigh
-        expr: lmTempSensorsValue{instance="<SWITCH_IP>"} / 1000 > 75
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "Temperature sensor {{ $labels.lmTempSensorsIndex }} above 75C: {{ $value }}C"
-
-      - alert: FanDown
-        expr: fan1Status{instance="<SWITCH_IP>"} != 1 or fan2Status{instance="<SWITCH_IP>"} != 1
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Fan status abnormal"
-
-      - alert: SnmpScrapeDown
-        expr: up{job=~"sonic_.*"} == 0
-        for: 2m
-        labels:
-          severity: critical
-        annotations:
-          summary: "SNMP scrape failed for job {{ $labels.job }} instance {{ $labels.instance }}"
-```
+<!-- RULES_YML_START -->
+<!-- RULES_YML_END -->
 
 ### 3.3 Apply configuration - Prometheus Server
 
@@ -728,7 +538,12 @@ curl -X POST \
   http://<GRAFANA_IP>:3000/api/dashboards/db \
   -d @dashboard.json
 ```
-Download Dashboard [Dashboard](https://github.com/qwert22356/Enterprise-SONiC-Telemetry-Monitoring/blob/main/Prometheus%20Resources/dashboard.json)
+
+#### dashboard.json #### 
+<!-- DASHBOARD_JSON_START -->
+<!-- DASHBOARD_JSON_END -->
+
+---
 
 <img width="1575" height="868" alt="image" src="https://github.com/user-attachments/assets/0bc4cd4b-07b8-497e-8219-c6be9089a53d" />
 
