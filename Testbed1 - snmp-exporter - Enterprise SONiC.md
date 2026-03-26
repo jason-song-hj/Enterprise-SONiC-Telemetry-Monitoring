@@ -482,6 +482,124 @@ Performance CPU 0.00%, MEM 0.6% so it was not very occupied and just little reso
 Location: `/etc/prometheus/prometheus.yml` (or your mounted path)
 
 <!-- PROMETHEUS_YML_START -->
+```yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - /etc/prometheus/rules.yml
+
+scrape_configs:
+  - job_name: sonic_interfaces
+    static_configs:
+      - targets:
+          - <SWITCH_IP>
+    metrics_path: /snmp
+    params:
+      module: [sonic_if]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+  - job_name: sonic_system
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_system]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+  - job_name: sonic_sensors
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_sensors]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+  - job_name: sonic_hardware
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_hardware]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+  - job_name: sonic_ddm
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_ddm]
+      auth: [public_v2]
+    scrape_interval: 60s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+  - job_name: sonic_tables
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_tables]
+      auth: [public_v2]
+    scrape_interval: 60s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+  - job_name: sonic_routing
+    static_configs:
+      - targets: [<SWITCH_IP>]
+    metrics_path: /snmp
+    params:
+      module: [sonic_routing]
+      auth: [public_v2]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <SWITCH_IP>:9116
+
+```
 <!-- PROMETHEUS_YML_END -->
 
 > ⚠️ Replace `<SWITCH_IP>` with your actual switch IP (e.g. `100.105.8.4`)
@@ -491,6 +609,84 @@ Location: `/etc/prometheus/prometheus.yml` (or your mounted path)
 Location: `/etc/prometheus/rules.yml`
 
 <!-- RULES_YML_START -->
+```yaml
+groups:
+  - name: sonic_table_counts
+    interval: 60s
+    rules:
+      - record: sonic_arp_count
+        expr: count(ipNetToPhysicalType{instance="<SWITCH_IP>"})
+      # sonic_mac_count: uncomment when MAC table data is available
+      # sonic_vlan_count: uncomment when VLAN data is available
+      # sonic_ipv4_route_count: uncomment when route table data is available
+
+  - name: sonic_alerts
+    rules:
+      - alert: InterfaceDown
+        expr: ifOperStatus{instance="<SWITCH_IP>", ifName!="eth0"} == 2
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Interface {{ $labels.ifName }} is down"
+
+      - alert: CPUHigh
+        expr: (100 - ucdCpuIdle{instance="<SWITCH_IP>"}) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 90%: {{ $value }}%"
+
+      - alert: MemoryHigh
+        expr: (1 - ucdMemAvailReal{instance="<SWITCH_IP>"} / ucdMemTotalReal{instance="<SWITCH_IP>"}) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 85%: {{ $value }}%"
+
+      - alert: PSUDown
+        expr: psu1PowerStatus{instance="<SWITCH_IP>"} != 1 or psu2PowerStatus{instance="<SWITCH_IP>"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PSU power status abnormal"
+
+      - alert: BGPPeerDown
+        expr: bgpPeerState{instance="<SWITCH_IP>"} != 6
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "BGP peer {{ $labels.bgpPeerRemoteAddr }} not in established state"
+
+      - alert: TempHigh
+        expr: lmTempSensorsValue{instance="<SWITCH_IP>"} / 1000 > 75
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Temperature sensor {{ $labels.lmTempSensorsIndex }} above 75C: {{ $value }}C"
+
+      - alert: FanDown
+        expr: fan1Status{instance="<SWITCH_IP>"} != 1 or fan2Status{instance="<SWITCH_IP>"} != 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Fan status abnormal"
+
+      - alert: SnmpScrapeDown
+        expr: up{job=~"sonic_.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "SNMP scrape failed for job {{ $labels.job }} instance {{ $labels.instance }}"
+
+```
 <!-- RULES_YML_END -->
 
 ### 3.3 Apply configuration - Prometheus Server
@@ -541,6 +737,397 @@ curl -X POST \
 
 #### dashboard.json #### 
 <!-- DASHBOARD_JSON_START -->
+```json
+{
+  "dashboard": {
+    "title": "SONiC Switch Monitor",
+    "uid": "sonic-switch-01",
+    "tags": ["sonic", "snmp", "network"],
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 38,
+    "templating": {
+      "list": [
+        {
+          "name": "instance",
+          "type": "query",
+          "label": "Switch",
+          "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+          "query": "label_values(ifOperStatus, instance)",
+          "refresh": 2,
+          "sort": 1,
+          "current": {}
+        },
+        {
+          "name": "ifName",
+          "type": "query",
+          "label": "Interface",
+          "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+          "query": "label_values(ifOperStatus{instance=\"$instance\", ifName!=\"eth0\"}, ifName)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": "Ethernet.*",
+          "refresh": 2,
+          "sort": 3,
+          "current": {}
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "title": "Interface Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 0, "w": 24, "h": 5},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "sort_desc(ifOperStatus{instance=\"$instance\", ifName=~\"Ethernet.*\"})",
+            "legendFormat": "{{ifName}}",
+            "instant": true
+          }
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none",
+          "textMode": "name",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "1": {"text": "UP", "color": "green", "index": 0},
+                  "2": {"text": "DOWN", "color": "red", "index": 1}
+                }
+              }
+            ],
+            "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "CPU Usage %",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 5, "w": 8, "h": 7},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "100 - ucdCpuIdle{instance=\"$instance\"}", "legendFormat": "Total"},
+          {"expr": "ucdCpuUser{instance=\"$instance\"}", "legendFormat": "User"},
+          {"expr": "ucdCpuSystem{instance=\"$instance\"}", "legendFormat": "System"},
+          {"expr": "ucdCpuIoWait{instance=\"$instance\"}", "legendFormat": "IoWait"}
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent", "min": 0, "max": 100,
+            "custom": {"lineWidth": 1, "fillOpacity": 10},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 80},
+              {"color": "red", "value": 90}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "Memory Usage %",
+        "type": "timeseries",
+        "gridPos": {"x": 8, "y": 5, "w": 8, "h": 7},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "(1 - ucdMemAvailReal{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"}) * 100",
+            "legendFormat": "Used %"
+          },
+          {
+            "expr": "ucdMemBuffer{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"} * 100",
+            "legendFormat": "Buffer %"
+          },
+          {
+            "expr": "ucdMemCached{instance=\"$instance\"} / ucdMemTotalReal{instance=\"$instance\"} * 100",
+            "legendFormat": "Cached %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent", "min": 0, "max": 100,
+            "custom": {"lineWidth": 1, "fillOpacity": 10},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 75},
+              {"color": "red", "value": 85}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 4,
+        "title": "Temperature Sensors (C)",
+        "type": "timeseries",
+        "gridPos": {"x": 16, "y": 5, "w": 8, "h": 7},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "lmTempSensorsValue{instance=\"$instance\"} / 1000",
+            "legendFormat": "Sensor {{lmTempSensorsIndex}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "celsius",
+            "custom": {"lineWidth": 1, "fillOpacity": 10},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 75},
+              {"color": "red", "value": 85}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "PSU Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "psu1PowerStatus{instance=\"$instance\"}", "legendFormat": "PSU 1", "instant": true},
+          {"expr": "psu2PowerStatus{instance=\"$instance\"}", "legendFormat": "PSU 2", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "1": {"text": "Normal", "color": "green", "index": 0},
+                  "2": {"text": "Warning", "color": "orange", "index": 1},
+                  "3": {"text": "Critical", "color": "red", "index": 2},
+                  "4": {"text": "Shutdown", "color": "red", "index": 3},
+                  "5": {"text": "Not Present", "color": "grey", "index": 4},
+                  "6": {"text": "Not Functioning", "color": "red", "index": 5}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 6,
+        "title": "Fan Status",
+        "type": "stat",
+        "gridPos": {"x": 6, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "fan1Status{instance=\"$instance\"}", "legendFormat": "Fan 1", "instant": true},
+          {"expr": "psu1FanStatus{instance=\"$instance\"}", "legendFormat": "PSU1 Fan", "instant": true},
+          {"expr": "psu2FanStatus{instance=\"$instance\"}", "legendFormat": "PSU2 Fan", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "1": {"text": "OK", "color": "green", "index": 0},
+                  "2": {"text": "Unavailable", "color": "orange", "index": 1},
+                  "3": {"text": "Failed", "color": "red", "index": 2}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 7,
+        "title": "Fan Speed (RPM)",
+        "type": "bargauge",
+        "gridPos": {"x": 12, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "fan1Rpm{instance=\"$instance\"}", "legendFormat": "Fan 1", "instant": true},
+          {"expr": "psu1FanRpm{instance=\"$instance\"}", "legendFormat": "PSU1 Fan", "instant": true},
+          {"expr": "psu2FanRpm{instance=\"$instance\"}", "legendFormat": "PSU2 Fan", "instant": true},
+          {"expr": "lmFanSensorsValue{instance=\"$instance\"}", "legendFormat": "Sensor {{lmFanSensorsIndex}}", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "orientation": "horizontal",
+          "displayMode": "gradient"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "rotrpm",
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "red", "value": 0}
+            ]}
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "PSU Voltage & Temp",
+        "type": "stat",
+        "gridPos": {"x": 18, "y": 12, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "psu1Temp{instance=\"$instance\"} / 1000", "legendFormat": "PSU1 Temp C", "instant": true},
+          {"expr": "psu2Temp{instance=\"$instance\"} / 1000", "legendFormat": "PSU2 Temp C", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "value",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {"unit": "celsius"}
+        }
+      },
+      {
+        "id": 9,
+        "title": "OSPF Status",
+        "type": "stat",
+        "gridPos": {"x": 0, "y": 16, "w": 6, "h": 4},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {"expr": "ospfAdminStat{instance=\"$instance\"}", "legendFormat": "OSPF Admin", "instant": true}
+        ],
+        "options": {
+          "reduceOptions": {"calcs": ["lastNotNull"]},
+          "colorMode": "background",
+          "graphMode": "none"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {
+                "type": "value",
+                "options": {
+                  "1": {"text": "Enabled", "color": "green", "index": 0},
+                  "2": {"text": "Disabled", "color": "red", "index": 1}
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": 10,
+        "title": "Interface RX Traffic (bps)",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCInOctets{instance=\"$instance\", ifName=~\"$ifName\"}[5m]) * 8",
+            "legendFormat": "{{ifName}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        },
+        "options": {"tooltip": {"mode": "multi", "sort": "desc"}}
+      },
+      {
+        "id": 11,
+        "title": "Interface TX Traffic (bps)",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 20, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCOutOctets{instance=\"$instance\", ifName=~\"$ifName\"}[5m]) * 8",
+            "legendFormat": "{{ifName}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        },
+        "options": {"tooltip": {"mode": "multi", "sort": "desc"}}
+      },
+      {
+        "id": 12,
+        "title": "Interface RX Packets/s",
+        "type": "timeseries",
+        "gridPos": {"x": 0, "y": 28, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCInUcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Ucast"
+          },
+          {
+            "expr": "rate(ifHCInMulticastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Mcast"
+          },
+          {
+            "expr": "rate(ifHCInBroadcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Bcast"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "pps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        }
+      },
+      {
+        "id": 13,
+        "title": "Interface TX Packets/s",
+        "type": "timeseries",
+        "gridPos": {"x": 12, "y": 28, "w": 12, "h": 8},
+        "datasource": {"type": "prometheus", "uid": "efglbr4gf9b7ka"},
+        "targets": [
+          {
+            "expr": "rate(ifHCOutUcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Ucast"
+          },
+          {
+            "expr": "rate(ifHCOutMulticastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Mcast"
+          },
+          {
+            "expr": "rate(ifHCOutBroadcastPkts{instance=\"$instance\", ifName=~\"$ifName\"}[5m])",
+            "legendFormat": "{{ifName}} Bcast"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "pps",
+            "custom": {"lineWidth": 1, "fillOpacity": 5}
+          }
+        }
+      }
+    ]
+  },
+  "folderId": 0,
+  "overwrite": true
+}
+
+```
 <!-- DASHBOARD_JSON_END -->
 
 ---
