@@ -91,6 +91,338 @@ Paste the following config:
 ### snmp.yml
 
 <!-- SNMP_YML_START -->
+```yaml
+auths:
+  public_v2:
+    version: 2
+    community: public
+
+modules:
+
+  # ============================================================
+  # Module 1: 接口流量 & 状态（已有基础2上完善）
+  # ============================================================
+  sonic_if:
+    walk:
+      - 1.3.6.1.2.1.2.2      # ifTable (ifOperStatus 等)
+      - 1.3.6.1.2.1.31.1.1   # ifXTable (ifName, ifHCInOctets 等)
+    metrics:
+      - name: ifName
+        oid: 1.3.6.1.2.1.31.1.1.1.1
+        type: DisplayString
+        help: Interface name
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+
+      - name: ifOperStatus
+        oid: 1.3.6.1.2.1.2.2.1.8
+        type: gauge
+        help: "Interface operational status: 1=up, 2=down"
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifAdminStatus
+        oid: 1.3.6.1.2.1.2.2.1.7
+        type: gauge
+        help: "Interface admin status: 1=up, 2=down"
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCInOctets
+        oid: 1.3.6.1.2.1.31.1.1.1.6
+        type: counter
+        help: Total bytes received (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCOutOctets
+        oid: 1.3.6.1.2.1.31.1.1.1.10
+        type: counter
+        help: Total bytes sent (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCInUcastPkts
+        oid: 1.3.6.1.2.1.31.1.1.1.7
+        type: counter
+        help: Unicast packets received (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHCOutUcastPkts
+        oid: 1.3.6.1.2.1.31.1.1.1.11
+        type: counter
+        help: Unicast packets sent (64-bit)
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifInErrors
+        oid: 1.3.6.1.2.1.2.2.1.14
+        type: counter
+        help: Inbound errors
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifOutErrors
+        oid: 1.3.6.1.2.1.2.2.1.20
+        type: counter
+        help: Outbound errors
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+      - name: ifHighSpeed
+        oid: 1.3.6.1.2.1.31.1.1.1.15
+        type: gauge
+        help: Interface speed in Mbps
+        indexes:
+          - labelname: ifIndex
+            type: gauge
+        lookups:
+          - labels: [ifIndex]
+            labelname: ifName
+            oid: 1.3.6.1.2.1.31.1.1.1.1
+            type: DisplayString
+
+  # ============================================================
+  # Module 2: CPU & 内存（UCD-SNMP MIB）
+  # ============================================================
+  sonic_system:
+    walk:
+      - 1.3.6.1.4.1.2021.11   # CPU (UCD-SNMP)
+      - 1.3.6.1.4.1.2021.4    # Memory (UCD-SNMP)
+      - 1.3.6.1.2.1.25.2.3    # hrStorageTable
+      - 1.3.6.1.2.1.1         # sysDescr, sysUpTime
+    metrics:
+      # --- CPU ---
+      - name: ucdCpuIdle
+        oid: 1.3.6.1.4.1.2021.11.11.0
+        type: gauge
+        help: CPU idle percentage
+
+      - name: ucdCpuUser
+        oid: 1.3.6.1.4.1.2021.11.9.0
+        type: gauge
+        help: CPU user percentage
+
+      - name: ucdCpuSystem
+        oid: 1.3.6.1.4.1.2021.11.10.0
+        type: gauge
+        help: CPU system percentage
+
+      - name: ucdCpuIoWait
+        oid: 1.3.6.1.4.1.2021.11.54.0
+        type: gauge
+        help: CPU iowait percentage
+
+      # --- Memory (UCD) ---
+      - name: ucdMemTotalReal
+        oid: 1.3.6.1.4.1.2021.4.5.0
+        type: gauge
+        help: Total real memory (kB)
+
+      - name: ucdMemAvailReal
+        oid: 1.3.6.1.4.1.2021.4.6.0
+        type: gauge
+        help: Available real memory (kB)
+
+      - name: ucdMemTotalFree
+        oid: 1.3.6.1.4.1.2021.4.11.0
+        type: gauge
+        help: Total free memory including swap (kB)
+
+      - name: ucdMemBuffer
+        oid: 1.3.6.1.4.1.2021.4.14.0
+        type: gauge
+        help: Memory used for buffers (kB)
+
+      - name: ucdMemCached
+        oid: 1.3.6.1.4.1.2021.4.15.0
+        type: gauge
+        help: Memory used for cache (kB)
+
+      # --- hrStorage (内存占用 index=54) ---
+      - name: hrStorageSize
+        oid: 1.3.6.1.2.1.25.2.3.1.5
+        type: gauge
+        help: Storage size in allocation units
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+
+      - name: hrStorageUsed
+        oid: 1.3.6.1.2.1.25.2.3.1.6
+        type: gauge
+        help: Storage used in allocation units
+        indexes:
+          - labelname: hrStorageIndex
+            type: gauge
+
+      # --- System ---
+      - name: sysUpTimeInstance
+        oid: 1.3.6.1.2.1.1.3.0
+        type: gauge
+        help: System uptime in hundredths of a second
+
+  # ============================================================
+  # Module 3: 温度传感器（UCD lmSensors + Entity Sensor MIB）
+  # ============================================================
+  sonic_sensors:
+    walk:
+      - 1.3.6.1.4.1.2021.13.16.2  # lmTempSensorsTable
+      - 1.3.6.1.4.1.2021.13.16.3  # lmFanSensorsTable
+      - 1.3.6.1.4.1.2021.13.16.4  # lmVoltSensorsTable
+      - 1.3.6.1.2.1.99.1.1.1      # entPhySensorValue (温度/PSU/DDM)
+    metrics:
+      # UCD lmSensors 温度
+      - name: lmTempSensorsValue
+        oid: 1.3.6.1.4.1.2021.13.16.2.1.3
+        type: gauge
+        help: Temperature sensor value (milli-Celsius, divide by 1000 for C)
+        indexes:
+          - labelname: lmTempSensorsIndex
+            type: gauge
+
+      # UCD lmSensors 风扇
+      - name: lmFanSensorsValue
+        oid: 1.3.6.1.4.1.2021.13.16.3.1.3
+        type: gauge
+        help: Fan speed sensor value (RPM)
+        indexes:
+          - labelname: lmFanSensorsIndex
+            type: gauge
+
+      # UCD lmSensors 电压
+      - name: lmVoltSensorsValue
+        oid: 1.3.6.1.4.1.2021.13.16.4.1.3
+        type: gauge
+        help: Voltage sensor value (mV)
+        indexes:
+          - labelname: lmVoltSensorsIndex
+            type: gauge
+
+      # Entity Sensor - 温度传感器 (index 200990110~200990710)
+      - name: entPhySensorValue
+        oid: 1.3.6.1.2.1.99.1.1.1.4
+        type: gauge
+        help: Entity physical sensor value (raw)
+        indexes:
+          - labelname: entPhySensorIndex
+            type: gauge
+
+      # Entity Sensor - 状态
+      - name: entPhySensorOperStatus
+        oid: 1.3.6.1.2.1.99.1.1.1.5
+        type: gauge
+        help: "Entity sensor operational status: 1=ok, 2=unavailable, 3=nonoperational"
+        indexes:
+          - labelname: entPhySensorIndex
+            type: gauge
+
+  # ============================================================
+  # Module 4: BGP & OSPF 路由协议
+  # ============================================================
+  sonic_routing:
+    walk:
+      - 1.3.6.1.2.1.15    # BGP4-MIB
+      - 1.3.6.1.2.1.14.1  # OSPF general group
+    metrics:
+      - name: bgpLocalAs
+        oid: 1.3.6.1.2.1.15.2.0
+        type: gauge
+        help: BGP local autonomous system number
+
+      - name: bgpPeerState
+        oid: 1.3.6.1.2.1.15.3.1.2
+        type: gauge
+        help: "BGP peer FSM state: 1=idle,2=connect,3=active,4=opensent,5=openconfirm,6=established"
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: bgpPeerAdminStatus
+        oid: 1.3.6.1.2.1.15.3.1.3
+        type: gauge
+        help: "BGP peer admin status: 1=stop, 2=start"
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: bgpPeerInUpdates
+        oid: 1.3.6.1.2.1.15.3.1.10
+        type: counter
+        help: BGP updates received from peer
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: bgpPeerOutUpdates
+        oid: 1.3.6.1.2.1.15.3.1.11
+        type: counter
+        help: BGP updates sent to peer
+        indexes:
+          - labelname: bgpPeerRemoteAddr
+            type: InetAddressIPv4
+
+      - name: ospfAdminStat
+        oid: 1.3.6.1.2.1.14.1.2.0
+        type: gauge
+        help: "OSPF admin status: 1=enabled, 2=disabled"
+
+      - name: ospfRouterId
+        oid: 1.3.6.1.2.1.14.1.1.0
+        type: DisplayString
+        help: OSPF router ID
+
+```
 <!-- SNMP_YML_END -->
 
 ### 2.2 Run Micas W6510-32C Switch m65_1$ snmp-exporter container
