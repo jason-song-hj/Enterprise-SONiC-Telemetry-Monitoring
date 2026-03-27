@@ -49,10 +49,10 @@ macOS (Control Node)
 | Component | Detail |
 |---|---|
 | Switch | M2-W6510-32C |
-| NOS | Broadcom Enterprise SONiC |
+| NOS | SONiC-OS-4.5.1-Enterprise_Advanced |
 | Control Node | macOS (Apple Silicon) |
 | Ansible | 2.17+ |
-| Collection | dellemc.enterprise_sonic 3.2.0 |
+| Collection | dellemc.enterprise_sonic 4.1.0 |
 | Connection | httpapi (HTTPS port 443) |
 | YANG | OpenConfig + SONiC native YANG |
 
