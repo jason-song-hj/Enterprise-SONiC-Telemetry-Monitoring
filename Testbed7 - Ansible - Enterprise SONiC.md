@@ -371,7 +371,7 @@ The REST paths used for VLAN operations:
 
 ## More Examples
 
-For more module usage examples covering interfaces, VLANs, LAG, L2/L3, and port breakout, see the official collection playbook examples:
+For more module usage examples covering interfaces, MH, VxLAN, and port breakout, see the official collection playbook examples
 
 [sonic_playbooks](https://github.com/ansible-collections/dellemc.enterprise_sonic/tree/main/playbooks/common_examples)
 
