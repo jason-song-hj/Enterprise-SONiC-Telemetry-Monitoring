@@ -124,9 +124,11 @@ dellemc.enterprise_sonic   4.1.0
 
 ```
 sonic-fabric/
-├── inventory.ini       # Device inventory
-├── test.yaml           # Test playbook (create VLAN)
-└── cleanup.yaml        # Cleanup playbook (delete VLAN)
+├── inventory.ini            # Device inventory
+├── group_vars/
+│   └── sonic_switches.yaml  # Shared variables (VLANs, IPs)
+├── fabric.yaml              # Main playbook
+└── cleanup.yaml             # Cleanup playbook
 ```
 
 ---
@@ -157,40 +159,113 @@ ansible_connection=httpapi
 | `ansible_httpapi_use_ssl` | `true` | HTTPS (port 443) |
 | `ansible_httpapi_validate_certs` | `false` | Skip self-signed cert validation |
 
+### group_vars/sonic_switches.yaml
+
+```yaml
+vlans:
+  - vlan_id: 10
+    description: "Server"
+  - vlan_id: 20
+    description: "Storage"
+  - vlan_id: 30
+    description: "Replication"
+```
+
 ---
 
 ## Playbooks
 
-### test.yaml — Create VLAN
+### fabric.yaml — Full configuration
 
 ```yaml
-- name: Test connection
+- name: Configure Enterprise SONiC
   hosts: sonic_switches
   gather_facts: no
   connection: httpapi
   tasks:
-    - name: Create VLAN 999
+    - name: Create VLANs
       dellemc.enterprise_sonic.sonic_vlans:
-        config:
-          - vlan_id: 999
+        config: "{{ vlans }}"
         state: merged
-      register: result
-    - debug:
-        var: result
+
+    - name: Configure SVI IPs
+      dellemc.enterprise_sonic.sonic_l3_interfaces:
+        config:
+          - name: Vlan10
+            ipv4:
+              addresses:
+                - address: 192.168.10.1/24
+          - name: Vlan20
+            ipv4:
+              addresses:
+                - address: 192.168.20.1/24
+          - name: Vlan30
+            ipv4:
+              addresses:
+                - address: 192.168.30.1/24
+        state: merged
+
+    - name: Create Loopback0
+      dellemc.enterprise_sonic.sonic_interfaces:
+        config:
+          - name: Loopback0
+        state: merged
+
+    - name: Configure Loopback0 IP
+      dellemc.enterprise_sonic.sonic_l3_interfaces:
+        config:
+          - name: Loopback0
+            ipv4:
+              addresses:
+                - address: 10.0.0.1/32
+        state: merged
 ```
 
-### cleanup.yaml — Delete VLAN
+> **Note:** Loopback interfaces must be created first with `sonic_interfaces` before assigning an IP with `sonic_l3_interfaces`. Unlike VLAN interfaces which are created automatically when a VLAN is added, Loopback interfaces require explicit creation.
+
+### cleanup.yaml — Remove all config
 
 ```yaml
-- name: Cleanup test
+- name: Cleanup all config
   hosts: sonic_switches
   gather_facts: no
   connection: httpapi
   tasks:
-    - name: Delete VLAN 999
-      dellemc.enterprise_sonic.sonic_vlans:
+    - name: Delete Loopback0 IP
+      dellemc.enterprise_sonic.sonic_l3_interfaces:
         config:
-          - vlan_id: 999
+          - name: Loopback0
+            ipv4:
+              addresses:
+                - address: 10.0.0.1/32
+        state: deleted
+
+    - name: Delete Loopback0
+      dellemc.enterprise_sonic.sonic_interfaces:
+        config:
+          - name: Loopback0
+        state: deleted
+
+    - name: Delete SVI IPs
+      dellemc.enterprise_sonic.sonic_l3_interfaces:
+        config:
+          - name: Vlan10
+            ipv4:
+              addresses:
+                - address: 192.168.10.1/24
+          - name: Vlan20
+            ipv4:
+              addresses:
+                - address: 192.168.20.1/24
+          - name: Vlan30
+            ipv4:
+              addresses:
+                - address: 192.168.30.1/24
+        state: deleted
+
+    - name: Delete VLANs
+      dellemc.enterprise_sonic.sonic_vlans:
+        config: "{{ vlans }}"
         state: deleted
 ```
 
@@ -201,10 +276,10 @@ ansible_connection=httpapi
 ```bash
 cd ~/sonic-fabric
 
-# Create VLAN 999
-ansible-playbook -i inventory.ini test.yaml
+# Apply full configuration
+ansible-playbook -i inventory.ini fabric.yaml
 
-# Delete VLAN 999
+# Remove all configuration
 ansible-playbook -i inventory.ini cleanup.yaml
 ```
 
@@ -212,42 +287,52 @@ ansible-playbook -i inventory.ini cleanup.yaml
 
 ## Expected Output
 
-### Create (first run)
+### fabric.yaml (first run)
 
 ```
-TASK [Create VLAN 999]
+TASK [Create VLANs]
 changed: [sonic1]
 
-result:
-  before: []
-  after:
-    - vlan_id: 999
-      autostate: true
-  changed: true
+TASK [Configure SVI IPs]
+changed: [sonic1]
+
+TASK [Create Loopback0]
+changed: [sonic1]
+
+TASK [Configure Loopback0 IP]
+changed: [sonic1]
 ```
 
-### Create (second run — idempotent)
+### fabric.yaml (second run — idempotent)
 
 ```
-TASK [Create VLAN 999]
+TASK [Create VLANs]
 ok: [sonic1]
 
-changed: false
+TASK [Configure SVI IPs]
+ok: [sonic1]
+
+TASK [Create Loopback0]
+ok: [sonic1]
+
+TASK [Configure Loopback0 IP]
+ok: [sonic1]
 ```
 
-The second run returns `ok` instead of `changed` — this is idempotency in action. The module performs a GET first, detects VLAN 999 already exists, and skips the PUT.
+All tasks return `ok` — nothing pushed to the device because the desired state already matches.
 
-### Delete
+### Verify via REST API
 
-```
-TASK [Delete VLAN 999]
-changed: [sonic1]
+```bash
+# Check SVI IPs
+curl -sk -u admin:<password> \
+  https://<switch-ip>/restconf/data/sonic-interface:sonic-interface \
+  | python3 -m json.tool
 
-result:
-  before:
-    - vlan_id: 999
-  after: []
-  changed: true
+# Check Loopback
+curl -sk -u admin:<password> \
+  https://<switch-ip>/restconf/data/sonic-loopback-interface:sonic-loopback-interface \
+  | python3 -m json.tool
 ```
 
 ---
@@ -281,6 +366,14 @@ The REST paths used for VLAN operations:
 | `deleted` | Remove specified config |
 | `replaced` | Replace config for specified objects |
 | `overridden` | Replace entire resource config on device |
+
+---
+
+## More Examples
+
+For more module usage examples covering interfaces, VLANs, LAG, L2/L3, and port breakout, see the official collection playbook examples:
+
+[sonic_playbooks](https://github.com/ansible-collections/dellemc.enterprise_sonic/tree/main/playbooks/common_examples)
 
 ---
 
