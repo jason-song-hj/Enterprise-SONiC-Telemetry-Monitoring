@@ -1,5 +1,5 @@
 <p align="center">
-  <i>Ansible Automation for Enterprise SONiC</i>
+  <i>Ansible Automation for Enterprise SONiC 4.5.1</i>
 </p>
 <p align="center">
   Built by <b>Jason S</b>
@@ -320,20 +320,6 @@ ok: [sonic1]
 ```
 
 All tasks return `ok` — nothing pushed to the device because the desired state already matches.
-
-### Verify via REST API
-
-```bash
-# Check SVI IPs
-curl -sk -u admin:<password> \
-  https://<switch-ip>/restconf/data/sonic-interface:sonic-interface \
-  | python3 -m json.tool
-
-# Check Loopback
-curl -sk -u admin:<password> \
-  https://<switch-ip>/restconf/data/sonic-loopback-interface:sonic-loopback-interface \
-  | python3 -m json.tool
-```
 
 ---
 
