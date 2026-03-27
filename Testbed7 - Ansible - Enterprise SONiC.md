@@ -23,6 +23,8 @@ This testbed demonstrates how to use Ansible to automate configuration managemen
 
 The Enterprise SONiC Management Framework container exposes a full REST API based on OpenConfig and SONiC YANG models, which Ansible communicates with directly over HTTPS — no SSH CLI involved.
 
+> The `dellemc.enterprise_sonic` collection works because both Dell and this platform share the same Broadcom Enterprise SONiC Management Framework, exposing identical OpenConfig YANG models over REST API.
+
 ---
 
 ## Architecture
@@ -67,7 +69,7 @@ docker ps | grep mgmt
 
 Expected output:
 ```
-29389b2756cd   docker-sonic-mgmt-framework:latest   "/usr/local/bin/supe…"   Up   mgmt-framework
+293847382dx   docker-sonic-mgmt-framework:latest   "/usr/local/bin/supe…"   Up   mgmt-framework
 ```
 
 ### Verify REST API is reachable
@@ -106,9 +108,14 @@ Verify:
 ansible-galaxy collection list | grep dellemc
 ```
 
+Verify:
+```bash
+ansible-galaxy collection install dellemc.enterprise_sonic --upgrade
+```
+
 Expected output:
 ```
-dellemc.enterprise_sonic   3.2.0
+dellemc.enterprise_sonic   4.1.0
 ```
 
 ---
