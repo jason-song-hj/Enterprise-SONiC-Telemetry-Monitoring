@@ -12,7 +12,7 @@
 
 ---
 <p align="center">
-  <b>Automate Enterprise SONiC configuration via OpenConfig YANG REST API using Ansible</b>
+  <b>Ansible Enterprise SONiC configuration via OpenConfig YANG REST API using Ansible</b>
 </p>
 
 ---
