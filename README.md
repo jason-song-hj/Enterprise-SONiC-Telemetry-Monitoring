@@ -37,8 +37,8 @@ This repository demonstrates real-world observability capabilities on **Broadcom
 <br>
 
 #### 1. Advanced SONiC Telemetry Insights
-- [ ] **MOD Packet Loss Visualization**: Real-time mirroring and precise loss tracking at the NIC/switch level.
-- [ ] **LDH Path Latency Visualization**: Network-wide latency probing and dynamic path topology rendering.
+- [ ] **MOD Packet Loss Visualization**: Real-time mirroring and precise loss tracking at the ASIC level.
+- [ ] **LDH Path Latency Visualization**: Network-wide latency by-hops probing and latency in ASIC.
 
 #### 2. Third-Party Tools & AI-Driven NetOps
 - [ ] **AI-Powered Automation**: Leveraging **Claude Code** for deep network operations and automated troubleshooting.
