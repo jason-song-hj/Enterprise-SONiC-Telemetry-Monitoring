@@ -65,7 +65,7 @@ Testing is progressing step by step. The 2026 roadmap focuses on mainstream DevO
 ## 🎥 Demo Videos & Community
 
 > 💡 **What would you like to see next?**  
-> More test scenarios and video demos are currently in production! If you have specific ideas regarding **MOD packet loss** or **Claude Code operations**, head over to my **[YouTube Channel (@jason_hj)](https://youtube.com)**. Subscribe and drop a comment—I will prioritize topics based on your feedback!
+> More test scenarios and video demos are currently in production! If you have specific ideas regarding **MOD packet loss** or **Claude Code operations**, head over to my [YouTube Channel (@jason_hj)](https://www.youtube.com/@jason_hj). Subscribe and drop a comment—I will prioritize topics based on your feedback!
 
 ---
 
