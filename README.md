@@ -30,20 +30,48 @@ This repository demonstrates real-world observability capabilities on **Broadcom
 
 ---
 
-## 🧪 Test Scenarios
+## 🧪 Test Scenarios & Roadmap
 
-| Module | Description | Demo |
+Testing is progressing step by step. The 2026 roadmap focuses on mainstream DevOps ecosystems and advanced Telemetry features, rolling out new scenarios sequentially.
+
+
+| Module | Description | Status / Demo |
 |--------|------------|------|
-| SNMP Monitoring | Interface + counters via SNMP exporter | [View](./snmp/README.md) |
-| gNMI Telemetry | Streaming telemetry via gnmic | [View](./gnmi/README.md) |
-| gRPC Collector | gRPC-based data ingestion | [View](./grpc/README.md) |
+| **Tailscale** | Secure mesh VPN networking & node access | [View](./tailscale/README.md) |
+| **Zabbix** | Infrastructure monitoring & alerting | [View](./zabbix/README.md) |
+| **Prometheus** | Time-series data & metrics collection | [View](./prometheus/README.md) |
+| **Ansible** | Automated provisioning & configuration | [View](./ansible/README.md) |
 
 ---
 
-## 🎥 Demo Videos
+### 🚀 2026 Advanced Testing Roadmap (Continuously Updated)
 
-- SNMP Demo → https://youtube.com/xxx
-- gNMI Demo → https://youtube.com/xxx
+<details>
+<summary>🗺️ <b>Click to expand Advanced Telemetry & Third-Party Integration Plans</b></summary>
+<br>
+
+#### 1. Advanced SONiC Telemetry Insights
+- [ ] **MOD Packet Loss Visualization**: Real-time mirroring and precise loss tracking at the NIC/switch level.
+- [ ] **LDH Path Latency Visualization**: Network-wide latency probing and dynamic path topology rendering.
+
+#### 2. Third-Party Tools & AI-Driven NetOps
+- [ ] **AI-Powered Automation**: Leveraging **Claude Code** for deep network operations and automated troubleshooting.
+- [ ] **Architecture Evolution**: Implementing **Hermes** NetOps solutions and deployment best practices.
+
+</details>
+
+---
+
+## 🎥 Demo Videos & Community
+
+<p align="center">
+  <a href="https://youtube.com" target="_blank">
+    <img src="https://shields.io▶_Subscribe_to_JasonHJ_YouTube-red?style=for-the-badge&logo=youtube&logoColor=white"/>
+  </a>
+</p>
+
+> 💡 **What would you like to see next?**  
+> More test scenarios and video demos are currently in production! If you have specific ideas regarding **MOD packet loss** or **Claude Code operations**, head over to my **[YouTube Channel (@jason_hj)](https://youtube.com)**. Subscribe and drop a comment—I will prioritize topics based on your feedback!
 
 ---
 
@@ -51,7 +79,4 @@ This repository demonstrates real-world observability capabilities on **Broadcom
 
 Most SONiC deployments lack a **unified observability layer**.
 
-This repo shows how to build:
-
-```text
-SNMP + gNMI + Streaming → Unified DataHub
+This repo shows how to build with 3rd tools step by step.
