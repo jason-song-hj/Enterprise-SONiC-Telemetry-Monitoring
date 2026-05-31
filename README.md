@@ -8,11 +8,13 @@
   Built by <b>Jason S</b>
 </p>
 
+<!-- 
 <p align="center">
   <a href="https://youtube.com/你的频道">
     <img src="https://img.shields.io/badge/▶ Watch Demo-YouTube-red?style=for-the-badge&logo=youtube"/>
   </a>
 </p>
+-->
 
 ---
 
