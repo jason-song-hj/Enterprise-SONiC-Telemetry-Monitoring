@@ -30,20 +30,6 @@ This repository demonstrates real-world observability capabilities on **Broadcom
 
 ---
 
-## 🧪 Test Scenarios & Roadmap
-
-Testing is progressing step by step. The 2026 roadmap focuses on mainstream DevOps ecosystems and advanced Telemetry features, rolling out new scenarios sequentially.
-
-
-| Module | Description | Status / Demo |
-|--------|------------|------|
-| **Tailscale** | Secure mesh VPN networking & node access | [View](./tailscale/README.md) |
-| **Zabbix** | Infrastructure monitoring & alerting | [View](./zabbix/README.md) |
-| **Prometheus** | Time-series data & metrics collection | [View](./prometheus/README.md) |
-| **Ansible** | Automated provisioning & configuration | [View](./ansible/README.md) |
-
----
-
 ### 🚀 2026 Advanced Testing Roadmap (Continuously Updated)
 
 <details>
